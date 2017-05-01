@@ -1,0 +1,72 @@
+body{
+	font-family: "Arial";
+	font-size: 24px;
+}
+.counter {
+	font-weight: bold;
+	font-size: 140%;
+	color: #bbc5ff;
+}
+.person-name{
+	font-weight: bold;
+	font-size: 120%;
+	background-color: #887766;
+	color: white;
+}
+.special-occasion {
+	color: #ffaa99;
+	font-weight: bold;
+}
+.small{
+	font-size: 70%;
+	font-weight: normal;
+}
+#nav li {
+	display: inline-block;
+	list-style: none;
+	border: solid 1px #ffccdd;
+	padding: 4px; 
+	margin-right: 5px;
+}
+.button{
+	background-color: #8888aa;
+	color: black;
+	border: 1px solid #ddccff;
+	padding: 4px;
+	width: 150px;
+	border-radius: 3px;
+	cursor: pointer;
+}
+.formfield .button{
+	display: inline-block;
+	margin-right: 10px;
+}
+.personeditform {
+	position: absolute;
+	left: 10%;
+	z-index: 20;
+	border-width: 1px;
+	border-style: solid;
+	padding: 12px;
+}
+/* COLOURS - light */
+body.light {
+	background-color: white;
+	color: #229;
+}
+body.light .personeditform {
+	background-color: #ddd;
+	border-color: #339;
+}
+
+/* COLOURS - dark */
+body.dark {
+	background-color: black;
+	color: yellow;
+}
+body.dark .personeditform {
+	background-color: #333;
+	border-color: #99c;
+}
+
+
