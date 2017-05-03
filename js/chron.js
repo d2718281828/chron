@@ -1,7 +1,7 @@
 /* TODO
 add routing
 decimal formatting
-validation on add - dont allow duplicate names.
+validation on add - dont allow duplicate names. Also add an id for the person which is alphanumeric
 add relative ages - ideally this would have multiple instances in event type.
 add birth timezone to the form
 add isme to the person record. or not, have a separate me variable
@@ -648,7 +648,7 @@ add isme to the person record. or not, have a separate me variable
 			this.tabify();
 			
 			if (this.dset.hasPeople()) this.showTab("summary");
-			else this.showTab("home");
+			else this.showTab("intro");
 		},
 		reRender: function(){
 			this.pages.forEach(function(page){page.render()});
