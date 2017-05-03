@@ -21,7 +21,7 @@ Enter your birthdate (and time, if you know it), and that of your friends, and w
 may not have thought of.</p>
 <div class="if-no-people">
 <h1>Getting Started</h1>
-Click on "Ages" above and then click on Add to add your date and time of biirth. You can add as many as you wish.
+Click on "Ages" above and then click on Add to add your date and time of birth. You can add as many people as you wish.
 </div>
 <h1>The time now</h1>
 <p>Counting the seconds</p>
@@ -30,7 +30,7 @@ Click on "Ages" above and then click on Add to add your date and time of biirth.
 </div>
 
 <div id="summary" role="page" class="wholepage">
-<h1>Ages</h1>
+<h1>People</h1>
 <div id="addperson" class="button" data-name="">Add person</div>
 <div id="personedit" class="template personeditform">
 	<p>Add/Edit</p>

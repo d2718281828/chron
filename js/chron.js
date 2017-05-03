@@ -281,10 +281,7 @@ add isme to the person record. or not, have a separate me variable
 		this.people = [];
 	}
 	agespage.prototype.linktext = function(){
-		return formatLink(this.pageid,"Ages");
-	}
-	agespage.prototype.addPerson_delete = function(p){
-		this.people.push(p);
+		return formatLink(this.pageid,"People");
 	}
 	agespage.prototype.render = function(){
 		var html = "";
@@ -696,7 +693,6 @@ add isme to the person record. or not, have a separate me variable
 			var tabs = "<ul>";
 			this.pages.forEach(function(page){
 				tabs+= '<li>'+page.linktext()+'</li>';
-				console.log("tabs",page.linktext());
 			});
 			tabs+= "</ul>";
 			$("#nav").html(tabs);
