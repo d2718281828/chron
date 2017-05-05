@@ -125,7 +125,7 @@ add isme to the person record. or not, have a separate me variable
 			return agesec/86400;
 		},
 		ageFormatted: function(agesec){
-			return formatNum(Math.floor(this.ageUnits(agesec)));
+			return formatDec(this.ageUnits(agesec),5);
 		},
 		duration: 8640000,
 		labelsize: 100
