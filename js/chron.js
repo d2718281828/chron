@@ -608,7 +608,7 @@ add isme to the person record. or not, have a separate me variable
 			
 			this.evedit.init(this.templates.personedit,this);
 
-			this.templates.personpage.detach();
+			//this.templates.personpage.detach();
 		},
 		setupActions: function(){
 			var that = this;
@@ -636,16 +636,16 @@ add isme to the person record. or not, have a separate me variable
 			
 			var sched = new schedulePage("schedule",this);
 			this.pages.push(sched);
-			
+			/*
 			this.dset.forEach(function(person){
 				console.log("person page",person);
 				that.pages.push(new personPage(person,that));
 			});
-			
+			*/
 			this.tabify();
 			
-			if (this.dset.hasPeople()) this.showTab("summary");
-			else this.showTab("intro");
+			//if (this.dset.hasPeople()) this.showTab("summary");
+			//else this.showTab("intro");
 		},
 		reRender: function(){
 			this.pages.forEach(function(page){page.render()});

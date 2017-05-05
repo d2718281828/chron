@@ -6,6 +6,8 @@
 <title>Chron</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js" type="text/javascript" ></script>
 <script LANGUAGE="javascript" src="js/moment-with-locales.js"> </script>
+<script LANGUAGE="javascript" src="js/router.js"> </script>
+<script LANGUAGE="javascript" src="js/routes.js"> </script>
 <script LANGUAGE="javascript" src="js/chron.js"> </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
@@ -72,7 +74,7 @@ Click on "Ages" above and then click on Add to add your date and time of birth. 
 <p>Time now: <span id="nowtime"></span>
 </div>
 
-<div id="personpage" role="page" class="wholepage template">
+<div id="personpage" role="page" class="wholepage">
 <h1 class="pagetitle">Person Page</h1>
 <p>Age now:
 </p>
