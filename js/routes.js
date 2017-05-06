@@ -5,19 +5,29 @@
 (function(){
 
   //Router.add('/page/registration-successfull', '<div><h3>Registration was successfull</h3></div>');
-  Router.add("/person/{personid}", '', function(data){
-	  Chronicle.showTab('personpage');
+  Router.add("/person/{personid}", 'personpage', function(data){
+	  
+	  console.log("Routes - person - "+data.personid);
+	  Chronicle.bindPerson(data.personid);
   });
   Router.add("/{pagename}", '', function(data){
+	  console.log("Routes - pagename");
 	  Chronicle.showTab(data.pagename);
   });
   Router.add("/", 'intro', function(data){
+	  console.log("Routes - root");
 	  Chronicle.showTab('intro');
   });
   Router.add(null, '<div class="page-content">404 Page Not Found</div>', function(data){
 
   });
 
-  Router.init();
+	$(document).ready(function() {
+		DataSet.init(Chronicle);
+		Chronicle.init(DataSet,EventEditForm); 
+		Router.init(function(pageid){
+			Chronicle.showTab(pageid);
+		});
+	} );
 
 })();

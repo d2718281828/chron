@@ -10,18 +10,19 @@
     /**
     * Analyse the payload and set the page accordingly
     */
-    init: function(){
+    init: function(cb){
 	  if (window.location.hasOwnProperty("hash")){
 		  var payload = window.location.hash.substring(1);
 	  } else {
 		  var payload = window.location.pathname;
 	  }
 	  this.payload = payload;
-	  console.log("location=",window.location,"payload=",payload);
-	  
+		
       for (var k=0; k<this.routes.length;k++){
         if (this.matches(this.routes[k],payload)) {
           console.log("Got a match to route "+k);
+		  if (this.props.content) cb.call(this,this.props.content);
+		  this.props.callback.call(this,this.props);
           return;
         }
       }

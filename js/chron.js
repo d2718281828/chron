@@ -17,12 +17,17 @@ add isme to the person record. or not, have a separate me variable
 		return n.toLocaleString("en-GB",{minimumFractionDigits: places});
 	}
 	function formatLink(tab,text){
+		var html = '<span class="link"><a href="#/'+tab+'">'+text+'</a></span>';
+		return html;
+	}
+	function formatLink_undo(tab,text){
 		var html = '<span class="linkit" data-tab="'+tab+'">'+text+'</span>';
 		return html;
 	}
-	
 	// person
 	function person(name,birthutc){
+		//TODO also translate non-alphameric - this needs to be a valid class name and url.
+		this.id = name.toLowerCase();
 		this.name = name;
 		this.birthutc = birthutc;
 		this.birth = moment(birthutc);
@@ -67,10 +72,8 @@ add isme to the person record. or not, have a separate me variable
 			var nextwhen = next + that.birthsec;
 
 			var label = numIntervals * evtype.labelsize
-			console.log("evtype=",evtype,nextwhen, lastone, interval);
 			
 			for (; nextwhen<lastone; nextwhen+=interval ){
-				console.log("---",nextwhen,label);
 				newOcc = new occasion(nextwhen,that,label);
 				newOcc.type = evtype;
 				sched.push(newOcc);
@@ -284,18 +287,20 @@ add isme to the person record. or not, have a separate me variable
 		return formatLink(this.pageid,"People");
 	}
 	agespage.prototype.render = function(){
+		console.log("_____________________Ages page is rendering");
 		var html = "";
 		this.chronicle.dset.forEach(function(person){
-			html+= "<p class='person-name'>"+person.name;
+			var personlink = '<a href="#/person/'+person.id+'">'+person.name+'</a>';
+			html+= "<p class='person-name'>"+personlink;
 			html+= "   <span class='small'>(Born "+person.birth.format("dddd, MMMM Do YYYY, h:mm:ss a")+")</span></p>";
-			html+= "<p>Age: <span class='counter' id='age-"+person.name+"'></span></p>";
+			html+= "<p>Age: <span class='counter' id='age-"+person.id+"'></span></p>";
 			html+= "<p>Next occasion "+person.nextOccasion()+"</p>";
 			// TOTO add edit button here
 			html+= '<p><div class="button editperson" data-name="'+person.name+'">Edit</div></p>';
 		});
 		$(".allages").html(html);
 		this.chronicle.dset.forEach(function(person){
-			person.setAgeElement('age-'+person.name);
+			person.setAgeElement('age-'+person.id);
 		});
 	}
 	agespage.prototype.tick = function(nowtime){
@@ -339,10 +344,13 @@ add isme to the person record. or not, have a separate me variable
 		
 	}
 	//  personpage
-	function personPage(person,chronicle){
+	function personPage(chronicle,$pageinDom){
+		this.chronicle = chronicle;
+		this.domPage = $pageinDom;
+	}
+	personPage.prototype.bindPerson = function(person){
 		this.person = person;
 		this.pageid = person.name;
-		this.chronicle = chronicle;
 		this.makePage();
 	}
 	personPage.prototype.render = function(){
@@ -352,8 +360,8 @@ add isme to the person record. or not, have a separate me variable
 	}
 	personPage.prototype.tick = function(nowtime){
 		var that = this;
-		this.f_age.html(this.person.age_sec_f);
-		this.f_days.html(formatNum(this.person.age_days));
+		//this.f_age.html(this.person.age_sec_f);
+		//this.f_days.html(formatNum(this.person.age_days));
 		var ageInSec = this.person.age_sec;
 		//console.log("retrieved age of "+this.person.name+" = "+ageInSec+", "+this.person.age_sec_f);
 		this.chronicle.eventTypes.forEach(function(evtype){
@@ -361,14 +369,13 @@ add isme to the person record. or not, have a separate me variable
 		});
 	}
 	personPage.prototype.makePage = function(){
-		this.domPage = this.chronicle.templates.personpage.clone();
-		this.domPage.attr("id",this.pageid);
-		$("body").append(this.domPage);
-		this.domPage.hide();
+		//this.domPage.attr("id",this.pageid);
+		//$("body").append(this.domPage);
+		//this.domPage.hide();
 		
 		this.domPage.find(".pagetitle").html(this.pageid);
-		this.f_age = this.domPage.find(".ageseconds");
-		this.f_days = this.domPage.find(".agedays");
+		//this.f_age = this.domPage.find(".ageseconds");
+		//this.f_days = this.domPage.find(".agedays");
 		
 		var ages = this.domPage.find(".ageslist");
 		this.chronicle.eventTypes.forEach(function(evtype){
@@ -407,9 +414,7 @@ add isme to the person record. or not, have a separate me variable
 			} else {
 				var storedArray=[];		// get from cookie??? Do i want to support such old browsers?
 			}
-			
-			// storedArray = this.transition();	// temp
-			
+						
 			storedArray.forEach(function(val){
 				var newObj = null;
 				if (val[0]=="person") {
@@ -427,7 +432,7 @@ add isme to the person record. or not, have a separate me variable
 		},
 		add: function(person){
 			person.setChronicle(this.chronicle);
-			var key = person.name;
+			var key = person.id;
 			this.all.push(person);
 			this.index[key] = person;
 			this.save();
@@ -443,18 +448,6 @@ add isme to the person record. or not, have a separate me variable
 			}
 			if (found>=0) this.all.splice(found,1);
 			this.save();
-		},
-		transition: function(){
-			var thelot = [ 
-				["person","Derek","1958-07-24T04:00:00"],
-				["person","Anna","1953-10-05T12:00:00"],
-				["person","Maja","1988-03-07T10:30:00"],
-				["person","Alex","1989-12-20T22:00:00"],
-				["person","James","1987-05-01T03:30:00"],
-				["person","Yvonne","1962-04-21T00:00:00"]
-			];
-			
-			return thelot;
 		},
 		forEach: function(cb){
 			for (var k=0; k<this.all.length; k++){
@@ -630,19 +623,22 @@ add isme to the person record. or not, have a separate me variable
 			this.pages.push(new frontpage("intro",this));
 			
 			var ages = new agespage("summary",this);
-			//this.dset.forEach(function(person){ ages.addPerson(person); });
 			ages.render();
 			this.pages.push(ages);
 			
 			var sched = new schedulePage("schedule",this);
 			this.pages.push(sched);
+
+			this.tabify();
 			/*
 			this.dset.forEach(function(person){
 				console.log("person page",person);
 				that.pages.push(new personPage(person,that));
 			});
 			*/
-			this.tabify();
+			// pages after this point will not be in the navigation
+			this.personPage = new personPage(that,$("#personpage"));
+			this.pages.push(this.personPage);
 			
 			//if (this.dset.hasPeople()) this.showTab("summary");
 			//else this.showTab("intro");
@@ -650,6 +646,11 @@ add isme to the person record. or not, have a separate me variable
 		reRender: function(){
 			this.pages.forEach(function(page){page.render()});
 			this.setupActions();		// TODO i'm not confident about this, should split them up by page.
+		},
+		bindPerson: function(personid){
+			var person = this.dset.get(personid);
+			if (!person) console.log("WARNING - could not find person "+personid);
+			this.personPage.bindPerson(person);
 		},
 		getPerson: function(peepname){
 			return this.dset.get(peepname);
@@ -712,10 +713,6 @@ add isme to the person record. or not, have a separate me variable
 	};
 	
 	
-	$(document).ready(function() {
-		DataSet.init(Chronicle);
-		Chronicle.init(DataSet,EventEditForm); 
-	} );
 
 })(jQuery);
 
