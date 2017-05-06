@@ -58,10 +58,16 @@ body.light .personeditform {
 	background-color: #ddd;
 	border-color: #339;
 }
+body.light a{
+	color: blue;
+}
 
 /* COLOURS - dark */
 body.dark {
 	background-color: black;
+	color: yellow;
+}
+body.dark a{
 	color: yellow;
 }
 body.dark .personeditform {

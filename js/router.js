@@ -1,7 +1,7 @@
 /**
 * Object to do really really simple routing
 */
-(function(){
+(function($){
   window.Router = {
     routes: [],
     payload: null,
@@ -11,21 +11,36 @@
     * Analyse the payload and set the page accordingly
     */
     init: function(cb){
-	  if (window.location.hasOwnProperty("hash")){
-		  var payload = window.location.hash.substring(1);
-	  } else {
-		  var payload = window.location.pathname;
-	  }
-	  this.payload = payload;
+		var that = this;
+		this.matchDataCallback = cb;
+		this.reInit(null);
+		$(document).on('click', 'a', function(ev){
+			var goto = $(ev.target).prop("href");
+			var hashloc = goto.indexOf('#');
+			goto = (hashloc>=0) ? goto.substr(hashloc+1) : '/';
+			console.log("going to "+goto);
+			that.reInit(goto);
+		});
+	},
+	reInit: function(payload) {
+		if (!payload){
+			if (window.location.hasOwnProperty("hash")){
+				payload = window.location.hash.substring(1);
+			} else {
+				// TODO cope with being in subdirectory
+				payload = window.location.pathname;
+			}
+		}
+		this.payload = payload;
 		
-      for (var k=0; k<this.routes.length;k++){
-        if (this.matches(this.routes[k],payload)) {
-          console.log("Got a match to route "+k);
-		  if (this.props.content) cb.call(this,this.props.content);
-		  this.props.callback.call(this,this.props);
-          return;
-        }
-      }
+		for (var k=0; k<this.routes.length;k++){
+			if (this.matches(this.routes[k],payload)) {
+				console.log("Got a match to route "+k);
+				if (this.props.content) this.matchDataCallback.call(this,this.props.content);
+				this.props.callback.call(this,this.props);
+				return;
+			}
+		}
     },
     add: function(pat, maindiv, initfunction){
       this.routes.push([pat,maindiv,initfunction]);
@@ -97,4 +112,4 @@
     }
 
   };
-})();
+})(jQuery);

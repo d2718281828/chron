@@ -1,5 +1,11 @@
-/* TODO
-add routing
+/* 
+STATUS
+routing in and most bugs ironed out.
+TODO
+Add occasion page
+add a static page class which will over about and any further info
+refactor the page classes so they are all the same - esp personpage
+	make the binding to the dom element automatic.
 decimal formatting
 validation on add - dont allow duplicate names. Also add an id for the person which is alphanumeric
 add relative ages - ideally this would have multiple instances in event type.
@@ -287,7 +293,6 @@ add isme to the person record. or not, have a separate me variable
 		return formatLink(this.pageid,"People");
 	}
 	agespage.prototype.render = function(){
-		console.log("_____________________Ages page is rendering");
 		var html = "";
 		this.chronicle.dset.forEach(function(person){
 			var personlink = '<a href="#/person/'+person.id+'">'+person.name+'</a>';
@@ -296,7 +301,7 @@ add isme to the person record. or not, have a separate me variable
 			html+= "<p>Age: <span class='counter' id='age-"+person.id+"'></span></p>";
 			html+= "<p>Next occasion "+person.nextOccasion()+"</p>";
 			// TOTO add edit button here
-			html+= '<p><div class="button editperson" data-name="'+person.name+'">Edit</div></p>';
+			html+= '<p><div class="button editperson" data-name="'+person.id+'">Edit</div></p>';
 		});
 		$(".allages").html(html);
 		this.chronicle.dset.forEach(function(person){
@@ -347,6 +352,7 @@ add isme to the person record. or not, have a separate me variable
 	function personPage(chronicle,$pageinDom){
 		this.chronicle = chronicle;
 		this.domPage = $pageinDom;
+		this.person = null;
 	}
 	personPage.prototype.bindPerson = function(person){
 		this.person = person;
@@ -359,6 +365,7 @@ add isme to the person record. or not, have a separate me variable
 		return formatLink(this.pageid,this.pageid);
 	}
 	personPage.prototype.tick = function(nowtime){
+		if (!this.person) return;
 		var that = this;
 		//this.f_age.html(this.person.age_sec_f);
 		//this.f_days.html(formatNum(this.person.age_days));
@@ -433,6 +440,10 @@ add isme to the person record. or not, have a separate me variable
 		add: function(person){
 			person.setChronicle(this.chronicle);
 			var key = person.id;
+			if (this.index.hasOwnProperty(key)){
+				console.log("Rejecting duplicate insert of "+key);
+				return;
+			}
 			this.all.push(person);
 			this.index[key] = person;
 			this.save();

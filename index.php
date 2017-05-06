@@ -68,8 +68,21 @@ Click on "Ages" above and then click on Add to add your date and time of birth. 
 </div>
 </div>
 
+<div id="occasion" role="page" class="wholepage">
+<h1>Occasion</h1>
+<div class="occasionmain">
+<p><span class="occasionlabel"></span></p>
+</div>
+<div class="occasioncountdown">
+</div>
+</div>
+
 <div id="about" role="page" class="wholepage">
-<h1>About Chron</h1>
+<h1>About Party Time</h1>
+<h2>What is a chron</h2>
+<p>We needed a name for a unit of time which is nothing to do with the Earth - as manking leaps out to the stars,
+the parochial rotation period of a rock orbiting a G class star in the stellar suburbs will become less and less relevant.</p>
+
 </div>
 
 <div id="personpage" role="page" class="wholepage">
