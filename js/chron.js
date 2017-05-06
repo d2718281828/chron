@@ -6,6 +6,7 @@ Add occasion page
 add a static page class which will over about and any further info
 refactor the page classes so they are all the same - esp personpage
 	make the binding to the dom element automatic.
+scroll tto top after soft link
 decimal formatting
 validation on add - dont allow duplicate names. Also add an id for the person which is alphanumeric
 add relative ages - ideally this would have multiple instances in event type.
@@ -389,6 +390,7 @@ add isme to the person record. or not, have a separate me variable
 			ages.append('<p>'+evtype.ageHtml()+'</p>');
 		});
 		var sched = this.domPage.find(".personschedule");
+		sched.empty();
 		this.person.schedule.forEach(function(occ){
 			sched.append('<p>'+occ.html()+'</p>');
 		});
