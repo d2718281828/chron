@@ -6,6 +6,7 @@ Add occasion page
 add a static page class which will over about and any further info
 refactor the page classes so they are all the same - esp personpage
 	make the binding to the dom element automatic.
+Edit hasnt been coded yet - and the form needs to distinguish between Add and Update button
 scroll tto top after soft link
 decimal formatting
 validation on add - dont allow duplicate names. Also add an id for the person which is alphanumeric
@@ -95,6 +96,13 @@ add isme to the person record. or not, have a separate me variable
 	person.prototype.nextOccasion = function(){
 		if (this.schedule.length==0) return "No schedule yet";
 		return this.schedule[0].html();
+	}
+	person.prototype.getOccasion = function(eventid){
+		for (var k=0; k<this.schedule.length; k++){
+			var res = this.schedule[k];
+			if (res.id()==eventid) return res;
+		}
+		return null;
 	}
 	person.prototype.toArray = function(){
 		return ["person",this.name,this.birthutc];
@@ -256,15 +264,25 @@ add isme to the person record. or not, have a separate me variable
 		var m;
 		m='<span class="occasiondate'+(this.special ? " special-occasion":"")+'">'+this.occMoment.format(this.timeformat())+'</span>';
 		m+= ' '+this.who.name;
-		//m+= ' '+formatNum(this.willbe);
 		m+= ' '+this.label();
-		return m;
+		var link = "#/event/"+this.id();
+		return '<a href="'+link+'">'+m+'</a>';
+	}
+	occasion.prototype.id = function(){
+		var lab = ("-"+this.willbe).replace(".","-");
+		return this.who.id+"-"+this.type.code+lab;
 	}
 	occasion.prototype.label = function(){
 		return this.type.label(this.willbe);
 	}
+	occasion.prototype.title = function(){
+		return this.who.name+" "+this.label();
+	}
 	occasion.prototype.timeformat = function(){
 		return this.type.timeformat();
+	}
+	occasion.prototype.ageFormatted = function(ageInSec){
+		return this.type.ageFormatted(ageInSec);
 	}
 	// FRONT page
 	function frontpage(id,chronicle){
@@ -317,6 +335,34 @@ add isme to the person record. or not, have a separate me variable
 	agespage.prototype.destroy = function(){
 		
 	}
+	// occasion page
+	function occasionPage(id,chronicle){
+		this.pageid = id;
+		this.chronicle = chronicle;
+		this.occasion = null;
+	}
+	occasionPage.prototype.bind = function(occasion){
+		this.occasion = occasion;
+		this.occasionid = occasion.id();
+		this.render();
+	}
+	occasionPage.prototype.render = function(){
+		console.log("rendering event",this.occasion);
+		$(".occasiontitle").html(this.occasion.title());
+		this.f_age = $(".current-age");
+		this.sec_to_go = $(".secondstogo");
+		this.clock_to_go = $(".clocktimetogo");
+	}
+	occasionPage.prototype.tick = function(nowtime){
+		if (!this.occasion) return;
+		var ageInSec = this.occasion.who.age_sec;
+		this.f_age.html(this.occasion.ageFormatted(ageInSec));
+		
+		this.sec_to_go.html(formatNum(Math.floor(this.occasion.occtime-nowtime)));
+		
+		//var nowMoment = moment(nowtime);
+		this.clock_to_go.html(this.occasion.occMoment.fromNow());
+	}
 	// schedule page
 	function schedulePage(id,chronicle){
 		this.pageid = id;
@@ -355,7 +401,7 @@ add isme to the person record. or not, have a separate me variable
 		this.domPage = $pageinDom;
 		this.person = null;
 	}
-	personPage.prototype.bindPerson = function(person){
+	personPage.prototype.bind = function(person){
 		this.person = person;
 		this.pageid = person.name;
 		this.makePage();
@@ -437,6 +483,13 @@ add isme to the person record. or not, have a separate me variable
 		},
 		get: function(personName){
 			if (this.index.hasOwnProperty(personName)) return this.index[personName];
+			return null;
+		},
+		getOccasion: function(eventid){
+			for (var k=0; k<this.all.length; k++){
+				var res = this.all[k].getOccasion(eventid);
+				if (res) return res;
+			}
 			return null;
 		},
 		add: function(person){
@@ -589,7 +642,7 @@ add isme to the person record. or not, have a separate me variable
 			
 			this.clock = setInterval(function(){
 				that.doTicking();
-			},250);
+			},200);
 			
 		},
 		eventTypes: [
@@ -652,6 +705,8 @@ add isme to the person record. or not, have a separate me variable
 			// pages after this point will not be in the navigation
 			this.personPage = new personPage(that,$("#personpage"));
 			this.pages.push(this.personPage);
+			this.occasionPage = new occasionPage("occasion",that);
+			this.pages.push(this.occasionPage);
 			
 			//if (this.dset.hasPeople()) this.showTab("summary");
 			//else this.showTab("intro");
@@ -663,7 +718,12 @@ add isme to the person record. or not, have a separate me variable
 		bindPerson: function(personid){
 			var person = this.dset.get(personid);
 			if (!person) console.log("WARNING - could not find person "+personid);
-			this.personPage.bindPerson(person);
+			this.personPage.bind(person);
+		},
+		bindOccasion: function(eventid){
+			var occasion = this.dset.getOccasion(eventid);
+			if (!occasion) console.log("WARNING - could not find event "+eventid);
+			this.occasionPage.bind(occasion);
 		},
 		getPerson: function(peepname){
 			return this.dset.get(peepname);

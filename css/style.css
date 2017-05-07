@@ -7,6 +7,9 @@ body{
 	font-size: 140%;
 	color: #bbc5ff;
 }
+.counter.big{
+	font-size: 220%;
+}
 .person-name{
 	font-weight: bold;
 	font-size: 120%;

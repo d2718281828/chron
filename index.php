@@ -69,19 +69,25 @@ Click on "Ages" above and then click on Add to add your date and time of birth. 
 </div>
 
 <div id="occasion" role="page" class="wholepage">
-<h1>Occasion</h1>
+<h1 class="occasiontitle">Occasion</h1>
 <div class="occasionmain">
-<p><span class="occasionlabel"></span></p>
 </div>
-<div class="occasioncountdown">
+<div class="current-age-wrap">
+<span class="counter big current-age"></span>
+</div>
+<div class="countdown">
+<p><span class="clocktimetogo"></span></p>
+<p><span class="secondstogo"></span> seconds to go!</p>
 </div>
 </div>
 
 <div id="about" role="page" class="wholepage">
 <h1>About Party Time</h1>
 <h2>What is a chron</h2>
-<p>We needed a name for a unit of time which is nothing to do with the Earth - as manking leaps out to the stars,
-the parochial rotation period of a rock orbiting a G class star in the stellar suburbs will become less and less relevant.</p>
+<p>We needed a unit of time which is nothing to do with the Earth - as mankind leaps out to the stars,
+the parochial orbital period of the third rock orbiting a G class star in the galactic suburbs will become less and less relevant.
+We chose 100 million seconds. We needed a name for it. We chose <em>chron</em> (from the Greek word for time).</p>
+<p>Plus, it's kinda cool to see the numbers ratcheting up and all those zeroes appearing at once.</p>
 
 </div>
 
