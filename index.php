@@ -71,6 +71,8 @@ Click on "Ages" above and then click on Add to add your date and time of birth. 
 <div id="occasion" role="page" class="wholepage">
 <h1 class="occasiontitle">Occasion</h1>
 <div class="occasionmain">
+<div class="occasionwhen">
+</div>
 </div>
 <div class="current-age-wrap">
 <span class="counter big current-age"></span>

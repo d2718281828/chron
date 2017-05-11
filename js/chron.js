@@ -2,12 +2,16 @@
 STATUS
 routing in and most bugs ironed out.
 TODO
-Add occasion page
-add a static page class which will over about and any further info
+event countdown as days and hours etc.
+big countdown
+fix occasion page bugs
+routing not working well on phone
+Add event templates with supplementary info
+add a static page class which will cover about and any further info
 refactor the page classes so they are all the same - esp personpage
 	make the binding to the dom element automatic.
 Edit hasnt been coded yet - and the form needs to distinguish between Add and Update button
-scroll tto top after soft link
+scroll to top after soft link
 decimal formatting
 validation on add - dont allow duplicate names. Also add an id for the person which is alphanumeric
 add relative ages - ideally this would have multiple instances in event type.
@@ -31,6 +35,33 @@ add isme to the person record. or not, have a separate me variable
 	function formatLink_undo(tab,text){
 		var html = '<span class="linkit" data-tab="'+tab+'">'+text+'</span>';
 		return html;
+	}
+	/**
+	* Gives an array of numbers of time from b to a.
+	* @param a,b both Moment objects.
+	*/
+	function dateDiff(a,b){
+		var borrow = [0,12,-1, 24,60,60];
+		var aa = dateArray(a);
+		var bb = dateArray(b);
+		var ans = [0,0,0,0,0,0];
+		
+		var carry = 0;
+		for (var k=5; k>=0; k--){
+			var x = aa[k] - bb[k]-carry;
+			if (x<0) {
+				carry = 1;
+				x = x + k==2 ? daysInMonth(bb[0],bb[1]) : borrow[k];
+			} else carry = 0;
+			ans[k] = x;
+		}
+		return ans;
+	}
+	/**
+	* Convert moment object to array of 6 numbers - years, months etc.
+	*/
+	function dateArray(a){
+		return [a.years(), a.months(), a.days(), a.hours(), a.minutes, a.seconds];
 	}
 	// person
 	function person(name,birthutc){
@@ -262,11 +293,14 @@ add isme to the person record. or not, have a separate me variable
 	}
 	occasion.prototype.html = function(){
 		var m;
-		m='<span class="occasiondate'+(this.special ? " special-occasion":"")+'">'+this.occMoment.format(this.timeformat())+'</span>';
+		m='<span class="occasiondate'+(this.special ? " special-occasion":"")+'">'+this.when()+'</span>';
 		m+= ' '+this.who.name;
 		m+= ' '+this.label();
 		var link = "#/event/"+this.id();
 		return '<a href="'+link+'">'+m+'</a>';
+	}
+	occasion.prototype.when = function(){
+		return this.occMoment.format(this.timeformat());
 	}
 	occasion.prototype.id = function(){
 		var lab = ("-"+this.willbe).replace(".","-");
@@ -349,6 +383,7 @@ add isme to the person record. or not, have a separate me variable
 	occasionPage.prototype.render = function(){
 		console.log("rendering event",this.occasion);
 		$(".occasiontitle").html(this.occasion.title());
+		$(".occasionwhen").html(this.occasion.when());
 		this.f_age = $(".current-age");
 		this.sec_to_go = $(".secondstogo");
 		this.clock_to_go = $(".clocktimetogo");
@@ -360,8 +395,9 @@ add isme to the person record. or not, have a separate me variable
 		
 		this.sec_to_go.html(formatNum(Math.floor(this.occasion.occtime-nowtime)));
 		
-		//var nowMoment = moment(nowtime);
+		var nowMoment = moment(nowtime);
 		this.clock_to_go.html(this.occasion.occMoment.fromNow());
+		//this.clock_to_go.html(dateDiff(nowMoment,this.occasion.occMoment));
 	}
 	// schedule page
 	function schedulePage(id,chronicle){
