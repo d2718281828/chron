@@ -36,6 +36,16 @@ add isme to the person record. or not, have a separate me variable
 		var html = '<span class="linkit" data-tab="'+tab+'">'+text+'</span>';
 		return html;
 	}
+	function formatDateDiff(d){
+		var units = [" years, "," months, "," days, "," hours, "," minutes, "," seconds."];
+		var m="";
+		var sig = false;
+		for (var k=0; k<6; k++){
+			if (d[k]>0) sig=true;
+			if (sig) m=m+d[k]+units[k];
+		}
+		return m;
+	}
 	/**
 	* Gives an array of numbers of time from b to a.
 	* @param a,b both Moment objects.
@@ -51,17 +61,25 @@ add isme to the person record. or not, have a separate me variable
 			var x = aa[k] - bb[k]-carry;
 			if (x<0) {
 				carry = 1;
-				x = x + k==2 ? daysInMonth(bb[0],bb[1]) : borrow[k];
+				x = x + (k==2 ? daysInMonth(bb[0],bb[1]) : borrow[k]);
 			} else carry = 0;
 			ans[k] = x;
 		}
 		return ans;
 	}
 	/**
+	* Month starts with 0
+	*/
+	function daysInMonth(year,month){
+		var days = [31,28,31,30,31,30,31,31,30,31,30,31];
+		if (month!=1) return days[month];
+		return 28 + ((year%4 == 0) ? 1 : 0) - ((year%100 == 0) ? 1 : 0) + ((year%400 == 0) ? 1 : 0);
+	}
+	/**
 	* Convert moment object to array of 6 numbers - years, months etc.
 	*/
 	function dateArray(a){
-		return [a.years(), a.months(), a.days(), a.hours(), a.minutes, a.seconds];
+		return [a.year(), a.month(), a.date(), a.hours(), a.minutes(), a.seconds()];
 	}
 	// person
 	function person(name,birthutc){
@@ -395,9 +413,9 @@ add isme to the person record. or not, have a separate me variable
 		
 		this.sec_to_go.html(formatNum(Math.floor(this.occasion.occtime-nowtime)));
 		
-		var nowMoment = moment(nowtime);
-		this.clock_to_go.html(this.occasion.occMoment.fromNow());
-		//this.clock_to_go.html(dateDiff(nowMoment,this.occasion.occMoment));
+		var nowMoment = moment(nowtime*1000);
+		//this.clock_to_go.html(this.occasion.occMoment.fromNow());
+		this.clock_to_go.html(formatDateDiff(dateDiff(this.occasion.occMoment,nowMoment)));
 	}
 	// schedule page
 	function schedulePage(id,chronicle){
