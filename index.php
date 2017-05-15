@@ -81,6 +81,8 @@ Click on "Ages" above and then click on Add to add your date and time of birth. 
 <p><span class="clocktimetogo"></span></p>
 <p><span class="secondstogo"></span> seconds to go!</p>
 </div>
+<div class="description">
+</div>
 </div>
 
 <div id="about" role="page" class="wholepage">
@@ -100,6 +102,14 @@ We chose 100 million seconds. We needed a name for it. We chose <em>chron</em> (
 <div class="ageslist"></div>
 <h2>Major events</h2>
 <div class="personschedule"></div>
+</div>
+
+<div id="saturndesc" class="templatedet">
+Saturny stuff
+</div>
+
+<div id="venusdesc" class="templatedet">
+Veusy stuff
 </div>
 
 </body>

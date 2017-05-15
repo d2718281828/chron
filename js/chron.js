@@ -2,7 +2,7 @@
 STATUS
 routing in and most bugs ironed out.
 TODO
-event countdown as days and hours etc.
+event countdown as days and hours etc. - fix plurals
 big countdown
 fix occasion page bugs
 routing not working well on phone
@@ -235,7 +235,8 @@ add isme to the person record. or not, have a separate me variable
 			return formatDec(this.ageUnits(agesec),7);
 		},
 		duration: 224.701 * 86400,	// https://nssdc.gsfc.nasa.gov/planetary/factsheet/venusfact.html	
-		labelsize: 1
+		labelsize: 1,
+		descid: "venusdesc"
 	};
 	MarsYears = {
 		code:"ma",
@@ -295,7 +296,8 @@ add isme to the person record. or not, have a separate me variable
 			return formatDec(this.ageUnits(agesec),9);
 		},
 		duration: 10759.22 * 86400,	// https://nssdc.gsfc.nasa.gov/planetary/factsheet/saturnfact.htmlf
-		labelsize: 1
+		labelsize: 1,
+		descid: "saturndesc"
 	};
 	// occasion
 	function occasion(when,person,willbe){
@@ -405,6 +407,17 @@ add isme to the person record. or not, have a separate me variable
 		this.f_age = $(".current-age");
 		this.sec_to_go = $(".secondstogo");
 		this.clock_to_go = $(".clocktimetogo");
+		
+		var $desc = $(".description");
+		$desc.empty();
+		if (this.occasion.type.hasOwnProperty("descid")){
+			var descid = this.occasion.type.descid;
+			var templ;
+			if (templ=this.chronicle.getTemplate(descid)){
+				var ntempl = templ.clone();
+				$desc.append(ntempl);
+			}
+		}
 	}
 	occasionPage.prototype.tick = function(nowtime){
 		if (!this.occasion) return;
@@ -708,14 +721,21 @@ add isme to the person record. or not, have a separate me variable
 		updateEventTypes: function(){
 			
 		},
+		saveTemplate: function(el,detach){
+			var $el = $(el);
+			var id = $el.attr("id");
+			console.log("Found template "+id);
+			if (detach) $el.detach();
+			$el.removeAttr("id");
+			this.templates[id] = $el;
+		},
 		getTemplates: function(){
 			var that = this;
 			$(".template").each(function(ix,el){
-				var $el = $(el);
-				var id = $el.attr("id");
-				// $el.detach();
-				$el.removeAttr("id");
-				that.templates[id] = $el;
+				that.saveTemplate(el,false);
+			});
+			$(".templatedet").each(function(ix,el){
+				that.saveTemplate(el,true);
 			});
 			console.log("read all templates",that.templates);
 			
@@ -782,6 +802,10 @@ add isme to the person record. or not, have a separate me variable
 		getPerson: function(peepname){
 			return this.dset.get(peepname);
 		},
+		getTemplate: function(tempname){
+			if (this.templates.hasOwnProperty(tempname)) return this.templates[tempname];
+			return null;
+		},
 		addPerson: function(newpeep){
 			this.dset.add(newpeep);
 			this.updateEventTypes();
@@ -814,6 +838,7 @@ add isme to the person record. or not, have a separate me variable
 			}
 		},
 		showTab: function(tabname){
+			console.log("================showTab "+tabname);
 			$(".wholepage").hide();
 			$("#"+tabname).show();
 		},

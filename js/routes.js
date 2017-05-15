@@ -21,7 +21,9 @@
 	  console.log("Routes - root");
 	  Chronicle.showTab('intro');
   });
-  Router.add(null, '<div class="page-content">404 Page Not Found</div>', function(data){
+  Router.add(null, 'intro', function(data){
+	  console.log("Routes - null");
+	  Chronicle.showTab('intro');
 
   });
 
