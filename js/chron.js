@@ -2,21 +2,7 @@
 STATUS
 routing in and most bugs ironed out.
 TODO
-event countdown as days and hours etc. - fix plurals
-big countdown
-fix occasion page bugs
-routing not working well on phone
-Add event templates with supplementary info
-add a static page class which will cover about and any further info
-refactor the page classes so they are all the same - esp personpage
-	make the binding to the dom element automatic.
-Edit hasnt been coded yet - and the form needs to distinguish between Add and Update button
-scroll to top after soft link
-decimal formatting
-validation on add - dont allow duplicate names. Also add an id for the person which is alphanumeric
-add relative ages - ideally this would have multiple instances in event type.
-add birth timezone to the form
-add isme to the person record. or not, have a separate me variable
+
 */
 (function($){
 	/**
@@ -38,11 +24,12 @@ add isme to the person record. or not, have a separate me variable
 	}
 	function formatDateDiff(d){
 		var units = [" years, "," months, "," days, "," hours, "," minutes, "," seconds."];
+		var unit = [" year, "," month, "," day, "," hour, "," minute, "," second."];
 		var m="";
 		var sig = false;
 		for (var k=0; k<6; k++){
 			if (d[k]>0) sig=true;
-			if (sig) m=m+d[k]+units[k];
+			if (sig) m=m+d[k]+(d[k]==1 ? unit[k] : units[k]);
 		}
 		return m;
 	}
@@ -401,6 +388,8 @@ add isme to the person record. or not, have a separate me variable
 		this.render();
 	}
 	occasionPage.prototype.render = function(){
+		if (!this.occasion) return;
+		
 		console.log("rendering event",this.occasion);
 		$(".occasiontitle").html(this.occasion.title());
 		$(".occasionwhen").html(this.occasion.when());
@@ -461,6 +450,19 @@ add isme to the person record. or not, have a separate me variable
 	}
 	schedulePage.prototype.destroy = function(){
 		
+	}
+	//  static page
+	function staticPage(id,chronicle,label){
+		this.pageid = id;
+		this.chronicle = chronicle;
+		this.label = label;
+	}
+	staticPage.prototype.linktext = function(){
+		return formatLink(this.pageid,this.label);
+	}
+	staticPage.prototype.render = function(){
+	}
+	staticPage.prototype.tick = function(nowtime){
 	}
 	//  personpage
 	function personPage(chronicle,$pageinDom){
@@ -768,6 +770,9 @@ add isme to the person record. or not, have a separate me variable
 			
 			var sched = new schedulePage("schedule",this);
 			this.pages.push(sched);
+			
+			var about = new staticPage("about",this,"About");
+			this.pages.push(about);
 
 			this.tabify();
 			/*
@@ -810,14 +815,14 @@ add isme to the person record. or not, have a separate me variable
 			this.dset.add(newpeep);
 			this.updateEventTypes();
 			this.pages.push(new personPage(newpeep,this));
-			this.tabify();
+			//this.tabify();
 			this.reRender();
 		},
 		deletePerson: function(peepname){
 			this.dset.delete(peepname);
 			this.updateEventTypes();
 			this.removePageFor(peepname);
-			this.tabify();
+			//this.tabify();
 			this.reRender();
 		},
 		setupLinks: function(){
@@ -845,6 +850,7 @@ add isme to the person record. or not, have a separate me variable
 		tabify: function(){
 			var tabs = "<ul>";
 			this.pages.forEach(function(page){
+				console.log("tabbing "+page.pageid);
 				tabs+= '<li>'+page.linktext()+'</li>';
 			});
 			tabs+= "</ul>";

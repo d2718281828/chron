@@ -92,6 +92,9 @@ Click on "Ages" above and then click on Add to add your date and time of birth. 
 the parochial orbital period of the third rock orbiting a G class star in the galactic suburbs will become less and less relevant.
 We chose 100 million seconds. We needed a name for it. We chose <em>chron</em> (from the Greek word for time).</p>
 <p>Plus, it's kinda cool to see the numbers ratcheting up and all those zeroes appearing at once.</p>
+<h2>This site is nothing to do with astrology</h2>
+<p>Note that the comments on this site are based on astronomical facts about the orbits of the planets, not about any astrological 
+associations, which have no credible influence on the destinies of individual people.</p>
 
 </div>
 
@@ -105,7 +108,22 @@ We chose 100 million seconds. We needed a name for it. We chose <em>chron</em> (
 </div>
 
 <div id="saturndesc" class="templatedet">
-Saturny stuff
+<p>Saturnian birthdays don’t come round that often, which makes this one is pretty special.</p>
+<p>How should you celebrate? Saturn was a Roman god with quite a few responsibilities, including wealth, plenty, 
+agriculture and renewal. He is the only Roman deity to have a day of the week named after him. 
+His festival in Roman times, the Saturnalia, is widely assumed to have been taken over by the early Christians as 
+the basis for the Christmas festivities.</p>
+<p>There are a lot of mythological associations for Saturn which you can use to inspire your celebration. 
+You can read more about the mythological associations of 
+Saturn <a href="https://en.wikipedia.org/wiki/Saturn_(mythology)">on Wikipedia</a>.</p>
+<p>Astronomically, of course, the planet Saturn has a spectacular set of rings: 
+it isn't the only planet to have a ring system but it is by far the biggest and most spectacular.</p>
+<p>We have taken information about the orbit of Saturn 
+from <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/saturnfact.html">NASA</a>.</p>
+<p><strong>A note about accuracy</strong>: although, for fun, on this site we calculate your age in 
+Saturn years to 9 decimal places, the figure we have for the length of the year is only accurate to one hundredth 
+of a day (about quarter of an hour), 
+so the figure for your age in Saturn years is only actually accurate to 6 decimal places.</p>
 </div>
 
 <div id="venusdesc" class="templatedet">
