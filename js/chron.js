@@ -2,7 +2,7 @@
 STATUS
 routing in and most bugs ironed out.
 TODO
-
+Edit/replace function not there
 */
 (function($){
 	/**
@@ -16,10 +16,6 @@ TODO
 	}
 	function formatLink(tab,text){
 		var html = '<span class="link"><a href="#/'+tab+'">'+text+'</a></span>';
-		return html;
-	}
-	function formatLink_undo(tab,text){
-		var html = '<span class="linkit" data-tab="'+tab+'">'+text+'</span>';
 		return html;
 	}
 	function formatDateDiff(d){
@@ -564,7 +560,7 @@ TODO
 		add: function(person){
 			person.setChronicle(this.chronicle);
 			var key = person.id;
-			if (this.index.hasOwnProperty(key)){
+			if (this.get(key)){
 				console.log("Rejecting duplicate insert of "+key);
 				return;
 			}
@@ -572,15 +568,20 @@ TODO
 			this.index[key] = person;
 			this.save();
 		},
-		delete: function(personName){
-			if (!this.index.hasOwnProperty(personName)) return;
-			this.index[personName] = null;		// cant actually remove it, i think
+		delete: function(personId){
+			if (!this.get(personId)) {
+				console.log("WARNING - unable to delete person "+personId);
+				return;
+			}
+			console.log("Deleting from data layer "+personId);
+			this.index[personId] = null;		// cant actually remove it, i think
 			
 			// find the index
 			var found = -1;
 			for (var k=0; k<this.all.length; k++) {
-				if (this.all[k].name == personName) found = k;
+				if (this.all[k].id == personId) found = k;
 			}
+			console.log("--Removing entry "+found, this.all);
 			if (found>=0) this.all.splice(found,1);
 			this.save();
 		},
@@ -669,6 +670,7 @@ TODO
 			$form.hide();
 		},
 		delete: function(){
+			console.log("deleting person "+this.personName);
 			this.ctl.deletePerson(this.personName);
 			this.cancel();
 		}
