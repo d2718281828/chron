@@ -15,7 +15,10 @@
 		this.matchDataCallback = cb;
 		this.reInit(null);
 		$(document).on('click', 'a', function(ev){
-			var goto = $(ev.target).prop("href");
+			var goto = $(ev.target).closest("a").prop("href");
+			if (!goto){
+				console.log("WARNING - could not determine destination ",goto,ev.target);
+			}
 			var hashloc = goto.indexOf('#');
 			goto = (hashloc>=0) ? goto.substr(hashloc+1) : '/';
 			console.log("going to "+goto);
