@@ -140,16 +140,27 @@ Edit/replace function not there
 		return ["person",this.name,this.birthutc];
 	}
 	// occasion (proto)types
-	SecondsTime = {
+	BaseOccasion = {
+		occLabel: "thingy",
+		occLabels: "thingies",
+		
+		ageHtml: function(agesec){
+			return '<span class="counter '+this.code+'_f_age"></span> '+this.occLabels;
+		},		
+		label: function(willbe){
+			return willbe+' '+this.occLabels;
+		}
+	}
+	SecondsTime = $.extend({},BaseOccasion,{
 		code:"sc",
+		occLabel: "second",
+		occLabels: "seconds",
+		
 		label: function(willbe){
 			return (willbe/100000000)+' chrons';
 		},
 		timeformat: function(){
 			return "dddd, MMMM Do YYYY, h:mm:ss a";
-		},
-		ageHtml: function(agesec){
-			return '<span class="counter '+this.code+'_f_age"></span> seconds';
 		},
 		ageUnits: function(agesec){
 			return agesec;
@@ -159,17 +170,14 @@ Edit/replace function not there
 		},
 		duration: 10000000,
 		labelsize: 10000000
-	};
-	DaysTime = {
+	});
+	DaysTime = $.extend({},BaseOccasion,{
 		code:"dy",
-		label: function(willbe){
-			return willbe+' days';
-		},
+		occLabel: "day",
+		occLabels: "days",
+		
 		timeformat: function(){
 			return "dddd, MMMM Do YYYY";
-		},
-		ageHtml: function(agesec){
-			return '<span class="counter '+this.code+'_f_age"></span> days';
 		},
 		ageUnits: function(agesec){
 			return agesec/86400;
@@ -179,7 +187,7 @@ Edit/replace function not there
 		},
 		duration: 8640000,
 		labelsize: 100
-	};
+	});
 	MercuryYears = {
 		code:"me",
 		label: function(willbe){
