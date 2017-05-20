@@ -473,13 +473,20 @@ Edit/replace function not there
 		this.chronicle = chronicle;
 		this.domPage = $pageinDom;
 		this.person = null;
+		this.render();
 	}
 	personPage.prototype.bind = function(person){
 		this.person = person;
 		this.pageid = person.name;
-		this.makePage();
+		var sched = this.domPage.find(".personschedule");
+		sched.empty();
+		this.person.schedule.forEach(function(occ){
+			sched.append('<p>'+occ.html()+'</p>');
+		});
+		this.tick();
 	}
 	personPage.prototype.render = function(){
+		this.makePage();
 	}
 	personPage.prototype.linktext = function(){
 		return formatLink(this.pageid,this.pageid);
@@ -505,13 +512,9 @@ Edit/replace function not there
 		//this.f_days = this.domPage.find(".agedays");
 		
 		var ages = this.domPage.find(".ageslist");
+		ages.empty();
 		this.chronicle.eventTypes.forEach(function(evtype){
 			ages.append('<p>'+evtype.ageHtml()+'</p>');
-		});
-		var sched = this.domPage.find(".personschedule");
-		sched.empty();
-		this.person.schedule.forEach(function(occ){
-			sched.append('<p>'+occ.html()+'</p>');
 		});
 	}
 	personPage.prototype.destroy = function(){
