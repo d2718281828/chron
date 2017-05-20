@@ -188,26 +188,25 @@ Edit/replace function not there
 		duration: 8640000,
 		labelsize: 100
 	});
-	MercuryYears = {
-		code:"me",
-		label: function(willbe){
-			return willbe+' Mercurian years';
-		},
+	BasePlanet = $.extend({},BaseOccasion,{
 		timeformat: function(){
 			return "dddd, MMMM Do YYYY, h:mm:ss a";
-		},
-		ageHtml: function(agesec){
-			return '<span class="counter '+this.code+'_f_age"></span> Mercurian Years';
 		},
 		ageUnits: function(agesec){
 			return agesec/this.duration;
 		},
 		ageFormatted: function(agesec){
-			return formatDec(this.ageUnits(agesec),7);
+			return formatDec(this.ageUnits(agesec),this.decPlaces);
 		},
+	});
+	MercuryYears = $.extend({},BasePlanet,{
+		code:"me",
+		occLabel: "Mercurian year",
+		occLabels: "Mercurian years",
+		decPlaces: 7,
 		duration: 87.969 * 86400,	// https://nssdc.gsfc.nasa.gov/planetary/factsheet/mercuryfact.html
 		labelsize: 1
-	};
+	});
 	VenusYears = {
 		code:"ve",
 		label: function(willbe){
@@ -483,7 +482,7 @@ Edit/replace function not there
 		this.person.schedule.forEach(function(occ){
 			sched.append('<p>'+occ.html()+'</p>');
 		});
-		this.tick();
+		// this.tick();
 	}
 	personPage.prototype.render = function(){
 		this.makePage();
