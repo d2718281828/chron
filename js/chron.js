@@ -64,7 +64,52 @@ Edit/replace function not there
 	function dateArray(a){
 		return [a.year(), a.month(), a.date(), a.hours(), a.minutes(), a.seconds()];
 	}
-	// person
+	/**
+	* generate list of fractions (halves, thirds, quarters, tenths) between two numbers a and b (a<b)
+	* @param a,b, real numbers > 0
+	* $return list of 4-ples [realnumber, magnitude, label, html], not sorted, but unique - same real number wont repeat
+	* 		Magnitude indicator of how rare the number is. integers - 0, multiples of 10 - 2, multiples of 100 - 4
+	*			halves, thirds, quarters - -1. tenths - -2.
+	*       Label - URI friendly way of referring to the number. for tenths, just decimal e.g. 3.4; for 3 and a quarter: 13-4.
+	*		HTML - html for the fraction symbol.
+	*		
+	* The returned list could be empty, e.g. fractList(3.44, 3.45).
+	* The list includes a and b if they are themselves such fractions.
+	*/
+	function fractList(a,b){
+		var res = intList(a,b);
+		res = res.concat(intFracList(a*2,b*2, 2, [1], -1));
+		res = res.concat(intFracList(a*3,b*3, 3, [1,2], -1));
+		res = res.concat(intFracList(a*4,b*4, 4, [1,3], -1));
+		res = res.concat(intFracList(a*10,b*10, 10, [1,2,3,4,6,7,8,9], -2));
+		return res;
+	}
+	// integers
+	function intList(a,b){
+		var res = [];
+		var mag;
+		for (var k=Math.ceil(a); k<=b; k++) {
+			mag = (k%10 == 0 ?2:0)+(k%100 == 0 ?2:0)+(k%1000 == 0 ?2:0)+(k%10000 == 0 ?2:0);
+			res.push([k, mag, k+"", k+"" ]);
+		}
+		return res;
+	}
+	// fraction bits
+	function intFracList(a,b,denum,mods,mag){
+		var res = [];
+		for (var k=Math.ceil(a); k<=b; k++) {
+			if (mods.indexOf(k%denum)>=0){
+				res.push([k/denum, mag, k+"-"+denum, fracHTML(k,denum) ]);
+			}
+		}
+		return res;
+	}
+	function fracHTML(n,d){
+		if (d==10) return ''+n/d;
+		return Math.floor(n/d)+"&frac"+(n%d)+''+d+';';
+	}
+	// Classes ================================================================================
+	// person Class
 	function person(name,birthutc){
 		//TODO also translate non-alphameric - this needs to be a valid class name and url.
 		this.id = name.toLowerCase();
@@ -93,8 +138,11 @@ Edit/replace function not there
 		this.age_sec_f = html;
 		this.age_days = Math.floor(age/86400);
 	}
+	person.prototype.setupSchedule_redo = function(){
+	}
 	person.prototype.setupSchedule = function(){
 		console.log("Setting up schedule for "+this.name);
+		//console.log("Test fracts 8.29,10.61",fractList(8.29,10.61));
 		var that = this;
 		var nowtime = Math.floor(new Date().getTime() / 1000);
 		var age = nowtime-this.birthsec;
@@ -149,6 +197,12 @@ Edit/replace function not there
 		},		
 		label: function(willbe){
 			return willbe+' '+this.occLabels;
+		},
+		ageUnits: function(agesec){
+			return agesec/this.duration;
+		},
+		ageFormatted: function(agesec){
+			return formatDec(this.ageUnits(agesec),this.decPlaces);
 		}
 	}
 	SecondsTime = $.extend({},BaseOccasion,{
@@ -185,19 +239,14 @@ Edit/replace function not there
 		ageFormatted: function(agesec){
 			return formatDec(this.ageUnits(agesec),5);
 		},
+		decPlaces: 5,
 		duration: 8640000,
 		labelsize: 100
 	});
 	BasePlanet = $.extend({},BaseOccasion,{
 		timeformat: function(){
 			return "dddd, MMMM Do YYYY, h:mm:ss a";
-		},
-		ageUnits: function(agesec){
-			return agesec/this.duration;
-		},
-		ageFormatted: function(agesec){
-			return formatDec(this.ageUnits(agesec),this.decPlaces);
-		},
+		}
 	});
 	MercuryYears = $.extend({},BasePlanet,{
 		code:"me",
@@ -207,88 +256,40 @@ Edit/replace function not there
 		duration: 87.969 * 86400,	// https://nssdc.gsfc.nasa.gov/planetary/factsheet/mercuryfact.html
 		labelsize: 1
 	});
-	VenusYears = {
+	VenusYears = $.extend({},BasePlanet,{
 		code:"ve",
-		label: function(willbe){
-			return willbe+' Venusian years';
-		},
-		timeformat: function(){
-			return "dddd, MMMM Do YYYY, h:mm:ss a";
-		},
-		ageHtml: function(agesec){
-			return '<span class="counter '+this.code+'_f_age"></span> Venusian years';
-		},
-		ageUnits: function(agesec){
-			return agesec/this.duration;
-		},
-		ageFormatted: function(agesec){
-			return formatDec(this.ageUnits(agesec),7);
-		},
+		occLabel: "Venusian year",
+		occLabels: "Venusian years",
+		decPlaces: 7,
 		duration: 224.701 * 86400,	// https://nssdc.gsfc.nasa.gov/planetary/factsheet/venusfact.html	
 		labelsize: 1,
 		descid: "venusdesc"
-	};
-	MarsYears = {
+	});
+	MarsYears = $.extend({},BasePlanet,{
 		code:"ma",
-		label: function(willbe){
-			return willbe+' Martian years';
-		},
-		timeformat: function(){
-			return "dddd, MMMM Do YYYY, h:mm:ss a";
-		},
-		ageHtml: function(agesec){
-			return '<span class="counter '+this.code+'_f_age"></span> Martian years';
-		},
-		ageUnits: function(agesec){
-			return agesec/this.duration;
-		},
-		ageFormatted: function(agesec){
-			return formatDec(this.ageUnits(agesec),7);
-		},
+		occLabel: "Martian year",
+		occLabels: "Martian years",
+		decPlaces: 7,
 		duration: 686.980 * 86400,	// https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html
 		labelsize: 1
-	};
-	JupiterYears = {
+	});
+	JupiterYears = $.extend({},BasePlanet,{
 		code:"ju",
-		label: function(willbe){
-			return willbe+' Jovian years';
-		},
-		timeformat: function(){
-			return "dddd, MMMM Do YYYY, h:mm:ss a";
-		},
-		ageHtml: function(agesec){
-			return '<span class="counter '+this.code+'_f_age"></span> Jovian years';
-		},
-		ageUnits: function(agesec){
-			return agesec/this.duration;
-		},
-		ageFormatted: function(agesec){
-			return formatDec(this.ageUnits(agesec),8);
-		},
+		occLabel: "Jovian year",
+		occLabels: "Jovian years",
+		decPlaces: 8,
 		duration: 4332.589 * 86400,	// https://nssdc.gsfc.nasa.gov/planetary/factsheet/jupiterfact.html
 		labelsize: 1
-	};
-	SaturnYears = {
+	});
+	SaturnYears = $.extend({},BasePlanet,{
 		code:"sa",
-		label: function(willbe){
-			return willbe+' Saturnian years';
-		},
-		timeformat: function(){
-			return "dddd, MMMM Do YYYY, h:mm:ss a";
-		},
-		ageHtml: function(agesec){
-			return '<span class="counter '+this.code+'_f_age"></span> Saturnian Years';
-		},
-		ageUnits: function(agesec){
-			return agesec/this.duration;
-		},
-		ageFormatted: function(agesec){
-			return formatDec(this.ageUnits(agesec),9);
-		},
+		occLabel: "Saturnian years",
+		occLabels: "Saturnian years",
+		decPlaces: 9,
 		duration: 10759.22 * 86400,	// https://nssdc.gsfc.nasa.gov/planetary/factsheet/saturnfact.htmlf
 		labelsize: 1,
 		descid: "saturndesc"
-	};
+	});
 	// occasion
 	function occasion(when,person,willbe){
 		this.occtime = when;	// in epoch seconds
