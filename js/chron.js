@@ -138,9 +138,21 @@ Edit/replace function not there
 		this.age_sec_f = html;
 		this.age_days = Math.floor(age/86400);
 	}
-	person.prototype.setupSchedule_redo = function(){
-	}
 	person.prototype.setupSchedule = function(){
+		console.log("Setting up newfangled schedule for "+this.name);
+		var that = this;
+		var nowtime = Math.floor(new Date().getTime() / 1000);
+		var age = nowtime-this.birthsec;
+		var sched = [];
+		this.chronicle.eventTypes.forEach(function(evtype){
+			console.log("---- creating schedule for "+that.name,evtype);
+			sched = sched.concat(evtype.makeSchedule(age,age+100000000,that));
+		});
+		this.schedule = sched.sort(function(a,b){
+			return (a.occtime<b.occtime) ? -1 : (a.occtime>b.occtime ? 1 : 0);
+		});
+	}
+	person.prototype.setupSchedule_undo = function(){
 		console.log("Setting up schedule for "+this.name);
 		//console.log("Test fracts 8.29,10.61",fractList(8.29,10.61));
 		var that = this;
@@ -203,6 +215,22 @@ Edit/replace function not there
 		},
 		ageFormatted: function(agesec){
 			return formatDec(this.ageUnits(agesec),this.decPlaces);
+		},
+		makeSchedule: function(agefrom,ageto,person){
+			var that = this;
+			var sched = [];
+			var candidates = fractList(agefrom/this.duration, ageto/this.duration);
+			candidates.forEach(function(candidate){
+				var mag = candidate[1]+that.baseMag;
+				if (mag>=0){
+					var occ=new occasion(person.birthsec+candidate[0]*that.duration,person,candidate[3]);
+					occ.magnitude = mag;
+					occ.typeLabel = candidate[2];
+					occ.type = that;
+					sched.push(occ);
+				}
+			});
+			return sched;
 		}
 	}
 	SecondsTime = $.extend({},BaseOccasion,{
@@ -211,7 +239,7 @@ Edit/replace function not there
 		occLabels: "seconds",
 		
 		label: function(willbe){
-			return (willbe/100000000)+' chrons';
+			return (willbe)+' chrons';
 		},
 		timeformat: function(){
 			return "dddd, MMMM Do YYYY, h:mm:ss a";
@@ -222,8 +250,9 @@ Edit/replace function not there
 		ageFormatted: function(agesec){
 			return formatNum(this.ageUnits(agesec).toFixed(0));
 		},
-		duration: 10000000,
-		labelsize: 10000000
+		duration: 100000000,
+		labelsize: 10000000,
+		baseMag: 2
 	});
 	DaysTime = $.extend({},BaseOccasion,{
 		code:"dy",
@@ -233,15 +262,16 @@ Edit/replace function not there
 		timeformat: function(){
 			return "dddd, MMMM Do YYYY";
 		},
-		ageUnits: function(agesec){
+		ageUnitsXX: function(agesec){
 			return agesec/86400;
 		},
-		ageFormatted: function(agesec){
+		ageFormattedXX: function(agesec){
 			return formatDec(this.ageUnits(agesec),5);
 		},
 		decPlaces: 5,
-		duration: 8640000,
-		labelsize: 100
+		duration: 86400,
+		labelsize: 1,
+		baseMag: -4
 	});
 	BasePlanet = $.extend({},BaseOccasion,{
 		timeformat: function(){
@@ -254,7 +284,8 @@ Edit/replace function not there
 		occLabels: "Mercurian years",
 		decPlaces: 7,
 		duration: 87.969 * 86400,	// https://nssdc.gsfc.nasa.gov/planetary/factsheet/mercuryfact.html
-		labelsize: 1
+		labelsize: 1,
+		baseMag: 0
 	});
 	VenusYears = $.extend({},BasePlanet,{
 		code:"ve",
@@ -263,7 +294,8 @@ Edit/replace function not there
 		decPlaces: 7,
 		duration: 224.701 * 86400,	// https://nssdc.gsfc.nasa.gov/planetary/factsheet/venusfact.html	
 		labelsize: 1,
-		descid: "venusdesc"
+		descid: "venusdesc",
+		baseMag: 0
 	});
 	MarsYears = $.extend({},BasePlanet,{
 		code:"ma",
@@ -271,7 +303,8 @@ Edit/replace function not there
 		occLabels: "Martian years",
 		decPlaces: 7,
 		duration: 686.980 * 86400,	// https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html
-		labelsize: 1
+		labelsize: 1,
+		baseMag: 1
 	});
 	JupiterYears = $.extend({},BasePlanet,{
 		code:"ju",
@@ -279,7 +312,8 @@ Edit/replace function not there
 		occLabels: "Jovian years",
 		decPlaces: 8,
 		duration: 4332.589 * 86400,	// https://nssdc.gsfc.nasa.gov/planetary/factsheet/jupiterfact.html
-		labelsize: 1
+		labelsize: 1,
+		baseMag: 3
 	});
 	SaturnYears = $.extend({},BasePlanet,{
 		code:"sa",
@@ -288,18 +322,19 @@ Edit/replace function not there
 		decPlaces: 9,
 		duration: 10759.22 * 86400,	// https://nssdc.gsfc.nasa.gov/planetary/factsheet/saturnfact.htmlf
 		labelsize: 1,
-		descid: "saturndesc"
+		descid: "saturndesc",
+		baseMag: 4
 	});
 	// occasion
 	function occasion(when,person,willbe){
 		this.occtime = when;	// in epoch seconds
 		this.occMoment = moment(when*1000);
 		this.who = person;
-		this.willbe = willbe;	// number of whatevers old the person will be
+		this.willbe = willbe;	// number of whatevers old the person will be (text?)
 		this.type = SecondsTime;
 		
 		// is it special?
-		this.special = (willbe%Chronicle.chronsize) == 0;
+		this.special = false;
 		
 	}
 	occasion.prototype.html = function(){
@@ -314,6 +349,10 @@ Edit/replace function not there
 		return this.occMoment.format(this.timeformat());
 	}
 	occasion.prototype.id = function(){
+		//var lab = ("-"+this.willbe).replace(".","-");
+		return this.who.id+"-"+this.type.code+"-"+this.typeLabel;
+	}
+	occasion.prototype.id_undo = function(){
 		var lab = ("-"+this.willbe).replace(".","-");
 		return this.who.id+"-"+this.type.code+lab;
 	}
@@ -321,9 +360,10 @@ Edit/replace function not there
 		return this.type.label(this.willbe);
 	}
 	occasion.prototype.title = function(){
-		return this.who.name+" "+this.label();
+		return this.who.name+" "+this.label() +" "+this.magnitude;
 	}
 	occasion.prototype.timeformat = function(){
+		//console.log("timeformat request",this.type);
 		return this.type.timeformat();
 	}
 	occasion.prototype.ageFormatted = function(ageInSec){
