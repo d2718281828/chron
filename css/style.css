@@ -77,5 +77,24 @@ body.dark .personeditform {
 	background-color: #333;
 	border-color: #99c;
 }
-
+body.dark .mag0{
+	font-size: 70%;
+	color: #885500;
+}
+body.dark .mag1{
+	font-size: 90%;
+	color: #997700;
+}
+body.dark .mag2{
+	font-size: 110%;
+	color: #bb9900;
+}
+body.dark .mag3{
+	font-size: 130%;
+	color: #ddcc00;
+}
+body.dark .mag4{
+	font-size: 160%;
+	color: #ffff00;
+}
 

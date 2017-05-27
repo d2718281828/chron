@@ -106,7 +106,9 @@ Edit/replace function not there
 	}
 	function fracHTML(n,d){
 		if (d==10) return ''+n/d;
-		return Math.floor(n/d)+"&frac"+(n%d)+''+d+';';
+		var whole = Math.floor(n/d);
+		if (whole==0) whole='';		// you dont say 0½
+		return whole+"&frac"+(n%d)+''+d+';';
 	}
 	// Classes ================================================================================
 	// person Class
@@ -136,7 +138,7 @@ Edit/replace function not there
 		this.f_age.html(html);
 		this.age_sec = age;
 		this.age_sec_f = html;
-		this.age_days = Math.floor(age/86400);
+		//this.age_days = Math.floor(age/86400);
 	}
 	person.prototype.setupSchedule = function(){
 		console.log("Setting up newfangled schedule for "+this.name);
@@ -231,8 +233,49 @@ Edit/replace function not there
 				}
 			});
 			return sched;
+		},
+		relevantTo: function(person){
+			return true;
+		},
+		// For most types this is a null operation, it's only for the person ages
+		showAgeElement: function(person){
+			
 		}
 	}
+	RelativeTime = $.extend({},BaseOccasion,{
+		code:"rt",
+		base: null,
+		label: function(willbe){
+			return (willbe)+' times the age of '+this.base.name;
+		},
+		timeformat: function(){
+			return "dddd, MMMM Do YYYY, h:mm:ss a";
+		},
+		ageHtml: function(agesec){
+			return '<span class="'+this.code+'_wrap_age"><span class="counter '+this.code+'_f_age"></span> '+this.occLabels+'</span>';
+		},		
+		ageUnits: function(agesec){
+			return agesec/this.base.age_sec;
+		},
+		ageFormatted: function(agesec){
+			return formatDec(this.ageUnits(agesec),9);
+		},
+		setBase: function(pers){
+			this.base = pers;
+			this.code = "rt-"+pers.name;
+			this.occLabels = "times the age of "+pers.name;
+		},
+		relevantTo: function(person){
+			//console.log("relevant to", person,  person && (person.id!=this.base.id));
+			return (person && (person.id!=this.base.id));
+		},
+		// Hide the age if relative to yourself
+		showAgeElement: function(person){
+			var $sect = $('.'+this.code+'_wrap_age');
+			if (this.relevantTo(person)) $sect.show();
+			else $sect.hide();
+		}
+	});
 	SecondsTime = $.extend({},BaseOccasion,{
 		code:"sc",
 		occLabel: "second",
@@ -337,9 +380,10 @@ Edit/replace function not there
 		this.special = false;
 		
 	}
+	// reference to the occasion page
 	occasion.prototype.html = function(){
 		var m;
-		m='<span class="occasiondate'+(this.special ? " special-occasion":"")+'">'+this.when()+'</span>';
+		m='<span class="occasiondate">'+this.when()+'</span>';
 		m+= ' '+this.who.name;
 		m+= ' '+this.label();
 		var link = "#/event/"+this.id();
@@ -352,13 +396,10 @@ Edit/replace function not there
 		//var lab = ("-"+this.willbe).replace(".","-");
 		return this.who.id+"-"+this.type.code+"-"+this.typeLabel;
 	}
-	occasion.prototype.id_undo = function(){
-		var lab = ("-"+this.willbe).replace(".","-");
-		return this.who.id+"-"+this.type.code+lab;
-	}
 	occasion.prototype.label = function(){
 		return this.type.label(this.willbe);
 	}
+	// used on the occasion page
 	occasion.prototype.title = function(){
 		return this.who.name+" "+this.label() +" "+this.magnitude;
 	}
@@ -478,6 +519,7 @@ Edit/replace function not there
 	}
 	schedulePage.prototype.render = function(){
 		var occasions = [];
+		// TODO get rid of [ev.occtime,ev]
 		this.chronicle.dset.forEach(function(person){
 			person.schedule.forEach(function(ev){
 				occasions.push([ev.occtime,ev]);
@@ -488,7 +530,8 @@ Edit/replace function not there
 		});
 		var html = "";
 		occasions.forEach(function(occasion){
-			html+='<p>'+occasion[1].html()+'</p>';
+			var mag = " class='mag"+occasion[1].magnitude+"'";
+			html+='<p'+mag+'>'+occasion[1].html()+'</p>';
 		});
 		$(".alloccasions").html(html);
 	}
@@ -516,10 +559,15 @@ Edit/replace function not there
 		this.render();
 	}
 	personPage.prototype.bind = function(person){
+		var that = this;
 		this.person = person;
 		this.pageid = person.name;
 		var sched = this.domPage.find(".personschedule");
 		sched.empty();
+		// only show ages relevant to that person
+		this.chronicle.eventTypes.forEach(function(evtype){
+			evtype.showAgeElement(that.person);
+		});
 		this.person.schedule.forEach(function(occ){
 			sched.append('<p>'+occ.html()+'</p>');
 		});
@@ -539,10 +587,12 @@ Edit/replace function not there
 		var ageInSec = this.person.age_sec;
 		//console.log("retrieved age of "+this.person.name+" = "+ageInSec+", "+this.person.age_sec_f);
 		this.chronicle.eventTypes.forEach(function(evtype){
+			evtype.showAgeElement(that.person);
 			that.domPage.find("."+evtype.code+"_f_age").html(evtype.ageFormatted(ageInSec));
 		});
 	}
 	personPage.prototype.makePage = function(){
+		var that=this;
 		//this.domPage.attr("id",this.pageid);
 		//$("body").append(this.domPage);
 		//this.domPage.hide();
@@ -554,7 +604,7 @@ Edit/replace function not there
 		var ages = this.domPage.find(".ageslist");
 		ages.empty();
 		this.chronicle.eventTypes.forEach(function(evtype){
-			ages.append('<p>'+evtype.ageHtml()+'</p>');
+			/*if (evtype.relevantTo(that.person))*/ ages.append('<p>'+evtype.ageHtml()+'</p>');
 		});
 	}
 	personPage.prototype.destroy = function(){
@@ -756,6 +806,8 @@ Edit/replace function not there
 			// this.getPeople();
 			this.getTemplates();
 			
+			this.setupAges();
+			
 			this.setupPages();
 			
 			this.setupActions();
@@ -770,6 +822,14 @@ Edit/replace function not there
 		eventTypes: [
 			SecondsTime,DaysTime,MercuryYears,VenusYears,MarsYears,JupiterYears,SaturnYears
 		],
+		setupAges: function(){
+			var that = this;
+			this.dset.forEach(function(person){
+				var rel = $.extend({},RelativeTime);
+				rel.setBase(person);
+				that.eventTypes.push(rel);
+			});
+		},
 		/**
 		* Needed if event types now change when the people change because of relative ages.
 		*/
