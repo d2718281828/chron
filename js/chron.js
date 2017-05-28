@@ -67,6 +67,7 @@ Edit/replace function not there
 	/**
 	* generate list of fractions (halves, thirds, quarters, tenths) between two numbers a and b (a<b)
 	* @param a,b, real numbers > 0
+	* @param extra boolean true if you wantt more fractions, like 6th and 12ths and 20ths
 	* $return list of 4-ples [realnumber, magnitude, label, html], not sorted, but unique - same real number wont repeat
 	* 		Magnitude indicator of how rare the number is. integers - 0, multiples of 10 - 2, multiples of 100 - 4
 	*			halves, thirds, quarters - -1. tenths - -2.
@@ -76,12 +77,18 @@ Edit/replace function not there
 	* The returned list could be empty, e.g. fractList(3.44, 3.45).
 	* The list includes a and b if they are themselves such fractions.
 	*/
-	function fractList(a,b){
+	function fractList(a,b,extra){
 		var res = intList(a,b);
 		res = res.concat(intFracList(a*2,b*2, 2, [1], -1));
 		res = res.concat(intFracList(a*3,b*3, 3, [1,2], -1));
 		res = res.concat(intFracList(a*4,b*4, 4, [1,3], -1));
 		res = res.concat(intFracList(a*10,b*10, 10, [1,2,3,4,6,7,8,9], -2));
+		if (extra){
+			res = res.concat(intFracList(a*6,b*6, 6, [1,5], -1));
+			res = res.concat(intFracList(a*8,b*8, 8, [1,3,5,7], -1));
+			res = res.concat(intFracList(a*12,b*12, 12, [1,5,7,11], -2));
+			res = res.concat(intFracList(a*20,b*20, 20, [1,3,7,9,11,13,17,19], -2));			
+		}
 		return res;
 	}
 	// integers
@@ -123,7 +130,7 @@ Edit/replace function not there
 	person.prototype.setChronicle = function(c){
 		this.chronicle = c;
 		this.chronsize = c.chronsize;
-		this.setupSchedule();
+		// this.setupSchedule();
 	}
 	person.prototype.setAgeElement = function(id){
 		this.f_age = $("#"+id);
@@ -135,10 +142,12 @@ Edit/replace function not there
 		var age = nowtime-this.birthsec;
 		
 		var html = formatNum(age.toFixed(0));
-		this.f_age.html(html);
 		this.age_sec = age;
 		this.age_sec_f = html;
-		//this.age_days = Math.floor(age/86400);
+		
+		// does this really below here? - it is agespage specific
+		// it belongs in the agespage tick.
+		this.f_age.html(html);
 	}
 	person.prototype.setupSchedule = function(){
 		console.log("Setting up newfangled schedule for "+this.name);
@@ -150,39 +159,6 @@ Edit/replace function not there
 			console.log("---- creating schedule for "+that.name,evtype);
 			sched = sched.concat(evtype.makeSchedule(age,age+100000000,that));
 		});
-		this.schedule = sched.sort(function(a,b){
-			return (a.occtime<b.occtime) ? -1 : (a.occtime>b.occtime ? 1 : 0);
-		});
-	}
-	person.prototype.setupSchedule_undo = function(){
-		console.log("Setting up schedule for "+this.name);
-		//console.log("Test fracts 8.29,10.61",fractList(8.29,10.61));
-		var that = this;
-		var nowtime = Math.floor(new Date().getTime() / 1000);
-		var age = nowtime-this.birthsec;
-		var lastone = nowtime + 90000000;
-
-		var sched = [];
-		var newOcc;
-		
-		this.chronicle.eventTypes.forEach(function(evtype){
-			
-			// next
-			var interval = evtype.duration;
-			var numIntervals = Math.ceil(age/interval);
-			var next = interval * numIntervals;
-			var nextwhen = next + that.birthsec;
-
-			var label = numIntervals * evtype.labelsize
-			
-			for (; nextwhen<lastone; nextwhen+=interval ){
-				newOcc = new occasion(nextwhen,that,label);
-				newOcc.type = evtype;
-				sched.push(newOcc);
-				label+=evtype.labelsize;
-			}	
-		});
-		
 		this.schedule = sched.sort(function(a,b){
 			return (a.occtime<b.occtime) ? -1 : (a.occtime>b.occtime ? 1 : 0);
 		});
@@ -221,7 +197,7 @@ Edit/replace function not there
 		makeSchedule: function(agefrom,ageto,person){
 			var that = this;
 			var sched = [];
-			var candidates = fractList(agefrom/this.duration, ageto/this.duration);
+			var candidates = fractList(agefrom/this.duration, ageto/this.duration, false);
 			candidates.forEach(function(candidate){
 				var mag = candidate[1]+that.baseMag;
 				if (mag>=0){
@@ -258,7 +234,10 @@ Edit/replace function not there
 			return agesec/this.base.age_sec;
 		},
 		ageFormatted: function(agesec){
-			return formatDec(this.ageUnits(agesec),9);
+			var units = this.ageUnits(agesec);
+			if (units>10) return formatDec(units,7);
+			if (units>3) return formatDec(units,8);
+			return formatDec(units,9);
 		},
 		setBase: function(pers){
 			this.base = pers;
@@ -274,7 +253,33 @@ Edit/replace function not there
 			var $sect = $('.'+this.code+'_wrap_age');
 			if (this.relevantTo(person)) $sect.show();
 			else $sect.hide();
-		}
+		},
+		makeSchedule: function(agefrom,ageto,person){
+			var that = this;
+			var sched = [];
+			var relfrom = agefrom/this.base.age_sec;		// current age relative to base person
+			var relto = ageto/(this.base.age_sec+ageto-agefrom);	// advance base age by same amount
+			if (relfrom>relto){		// swap so relfrom is lower
+				var x = relfrom;
+				relfrom = relto;
+				relto = x;
+			}
+			var candidates = fractList(relfrom, relto,true);
+			console.log("-----Relative time "+relfrom+" "+relto,candidates);
+			candidates.forEach(function(candidate){
+				var mag = candidate[1]+that.baseMag;
+				if (mag>=0){
+					var when = (candidate[0]*that.base.birthsec - person.birthsec) / (candidate[0]-1);
+					var occ=new occasion(when,person,candidate[3]);
+					occ.magnitude = mag;
+					occ.typeLabel = candidate[2];
+					occ.type = that;
+					sched.push(occ);
+				}
+			});
+			return sched;
+		},
+		baseMag: 3
 	});
 	SecondsTime = $.extend({},BaseOccasion,{
 		code:"sc",
@@ -806,7 +811,9 @@ Edit/replace function not there
 			// this.getPeople();
 			this.getTemplates();
 			
-			this.setupAges();
+			this.setupRelTimes();
+			
+			this.reSchedule();
 			
 			this.setupPages();
 			
@@ -822,13 +829,21 @@ Edit/replace function not there
 		eventTypes: [
 			SecondsTime,DaysTime,MercuryYears,VenusYears,MarsYears,JupiterYears,SaturnYears
 		],
-		setupAges: function(){
+		/**
+		* add the Event types for relative ages
+		*/
+		setupRelTimes: function(){
 			var that = this;
 			this.dset.forEach(function(person){
 				var rel = $.extend({},RelativeTime);
 				rel.setBase(person);
 				that.eventTypes.push(rel);
 			});
+		},
+		reSchedule: function(){
+			this.dset.forEach(function(person){
+				person.setupSchedule();
+			});			
 		},
 		/**
 		* Needed if event types now change when the people change because of relative ages.
