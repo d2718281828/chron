@@ -87,10 +87,6 @@ Click on "Ages" above and then click on Add to add your date and time of birth. 
 
 <div id="about" role="page" class="wholepage">
 <h1>About Party Time</h1>
-<h2>What is a chron</h2>
-<p>We needed a unit of time which is nothing to do with the Earth - as mankind leaps out to the stars,
-the parochial orbital period of the third rock orbiting a G class star in the galactic suburbs will become less and less relevant.
-We chose 100 million seconds. We needed a name for it. We chose <em>chron</em> (from the Greek word for time).</p>
 <p>Plus, it's kinda cool to see the numbers ratcheting up and all those zeroes appearing at once.</p>
 <h2>This site is nothing to do with astrology</h2>
 <p>Note that the comments on this site are based on astronomical facts about the orbits of the planets, not about any astrological 
@@ -127,8 +123,21 @@ so the figure for your age in Saturn years is only actually accurate to 6 decima
 </div>
 
 <div id="venusdesc" class="templatedet">
-Veusy stuff
+<p>The only planet to be given a feminine persona, <strong>Venus</strong> shines white, clad in it’s white cloudy veil, 
+both in the morning and evening as the morning and evening star, the brightest object in the heavens after the Sun and Moon.</p>
+<p>Similar in size to the Earth, Venus is often called the Earth’s twin planet, but if so it is truly 
+Earth’s evil twin. The alluring veil in which it is clad is actually a hellish hot atmosphere, hot enough to 
+melt lead, with a pressure of 90 Earth atmospheres and laced with sulphuric acid.</p>
+<p>Venus’s year is shorted than Earth’s, being closer to the Sun, so it gives you more opportunities to celebrate. 
+You probably want to focus more on the mythological connections than the astronomical ones, if you are looking 
+for a theme to your celebration. Venus is the goddess of love.</p>
 </div>
 
+<div id="chrondesc" class="templatedet">
+<h2>What is a chron?</h2>
+<p>We needed a unit of time which is nothing to do with the Earth - as mankind leaps out to the stars,
+the parochial orbital period of the third rock orbiting a G class star in the galactic suburbs will become less and less relevant.
+We chose 100 million seconds. We needed a name for it. We chose <em>chron</em> (from the Greek word for time).</p>
+</div>
 </body>
 </html>

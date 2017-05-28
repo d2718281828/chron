@@ -274,7 +274,7 @@ Edit/replace function not there
 			console.log("-----Relative time "+relfrom+" "+relto,candidates);
 			candidates.forEach(function(candidate){
 				// factor 4 means fractions are all ignored, facttor 2 means higher fractions are ignored
-				var fractfactor = candidate[0]>2 ? 1 : (candidate[0]<4 ? 2 : 4);
+				var fractfactor = candidate[0]<2 ? 1 : (candidate[0]>4 ? 4 : 2);
 				var mag = fractfactor*candidate[1]+that.baseMag;
 				if (mag>=0){
 					var when = (candidate[0]*that.base.birthsec - person.birthsec) / (candidate[0]-1);
@@ -308,6 +308,7 @@ Edit/replace function not there
 		},
 		duration: 100000000,
 		labelsize: 10000000,
+		descid: 'chrondesc',
 		baseMag: 2
 	});
 	DaysTime = $.extend({},BaseOccasion,{
@@ -317,12 +318,6 @@ Edit/replace function not there
 		
 		timeformat: function(){
 			return "dddd, MMMM Do YYYY";
-		},
-		ageUnitsXX: function(agesec){
-			return agesec/86400;
-		},
-		ageFormattedXX: function(agesec){
-			return formatDec(this.ageUnits(agesec),5);
 		},
 		decPlaces: 5,
 		duration: 86400,
