@@ -110,7 +110,7 @@ are probably more likely to have made a note of the accurate time of their birth
 </div>
 
 <div id="personpage" role="page" class="wholepage">
-<h1 class="pagetitle">Person Page</h1>
+<h1 class="pagetitle">Person PageX</h1>
 <p>Age now:
 </p>
 <div class="ageslist"></div>

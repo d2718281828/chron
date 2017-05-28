@@ -589,6 +589,9 @@ TODO
 		var that = this;
 		this.person = person;
 		this.pageid = person.name;
+		console.log("Binding Person to page",person, this.pageid);
+		this.domPage.find(".pagetitle").html(this.pageid);
+		
 		var sched = this.domPage.find(".personschedule");
 		sched.empty();
 		// only show ages relevant to that person
@@ -616,8 +619,6 @@ TODO
 	}
 	personPage.prototype.makePage = function(){
 		var that=this;
-		
-		this.domPage.find(".pagetitle").html(this.pageid);
 		
 		var ages = this.domPage.find(".ageslist");
 		ages.empty();
@@ -960,8 +961,6 @@ TODO
 			this.occasionPage = new occasionPage("occasion",that);
 			this.pages.push(this.occasionPage);
 			
-			//if (this.dset.hasPeople()) this.showTab("summary");
-			//else this.showTab("intro");
 		},
 		reRender: function(){
 			this.pages.forEach(function(page){page.render()});
