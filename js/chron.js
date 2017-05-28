@@ -112,9 +112,14 @@ Edit/replace function not there
 		return res;
 	}
 	function fracHTML(n,d){
-		if (d==10) return ''+n/d;
+		if (d==10 || d==20) return ''+n/d;
 		var whole = Math.floor(n/d);
 		if (whole==0) whole='';		// you dont say 0½
+		// &fracts are only define for single digit denoms
+		if (d>10){
+			var st = ' style="font-size:60%;"';
+			return whole + '<sup'+st+'>'+(n%d)+'</sup>&frasl;<sub'+st+'>'+d+'</sub>';
+		}
 		return whole+"&frac"+(n%d)+''+d+';';
 	}
 	// Classes ================================================================================
@@ -132,10 +137,10 @@ Edit/replace function not there
 		this.chronsize = c.chronsize;
 		// this.setupSchedule();
 	}
-	person.prototype.setAgeElement = function(id){
+	person.prototype.setAgeElement_obs = function(id){
 		this.f_age = $("#"+id);
 	}
-	person.prototype.setNextElement = function(id){
+	person.prototype.setNextElement_obs = function(id){
 		this.f_next = $("#"+id);
 	}
 	person.prototype.setAge = function(nowtime){
@@ -147,7 +152,8 @@ Edit/replace function not there
 		
 		// does this really below here? - it is agespage specific
 		// it belongs in the agespage tick.
-		this.f_age.html(html);
+		// this.f_age.html(html);
+		
 	}
 	person.prototype.setupSchedule = function(){
 		console.log("Setting up newfangled schedule for "+this.name);
@@ -267,7 +273,9 @@ Edit/replace function not there
 			var candidates = fractList(relfrom, relto,true);
 			console.log("-----Relative time "+relfrom+" "+relto,candidates);
 			candidates.forEach(function(candidate){
-				var mag = candidate[1]+that.baseMag;
+				// factor 4 means fractions are all ignored, facttor 2 means higher fractions are ignored
+				var fractfactor = candidate[0]>2 ? 1 : (candidate[0]<4 ? 2 : 4);
+				var mag = fractfactor*candidate[1]+that.baseMag;
 				if (mag>=0){
 					var when = (candidate[0]*that.base.birthsec - person.birthsec) / (candidate[0]-1);
 					var occ=new occasion(when,person,candidate[3]);
@@ -454,13 +462,15 @@ Edit/replace function not there
 			html+= '<p><div class="button editperson" data-name="'+person.id+'">Edit</div></p>';
 		});
 		$(".allages").html(html);
+		/*
 		this.chronicle.dset.forEach(function(person){
 			person.setAgeElement('age-'+person.id);
 		});
+		*/
 	}
 	agespage.prototype.tick = function(nowtime){
 		this.chronicle.dset.forEach(function(person){
-			person.setAge(nowtime);
+			$("#age-"+person.id).html(person.age_sec_f);
 		});
 	}
 	agespage.prototype.destroy = function(){
@@ -811,6 +821,8 @@ Edit/replace function not there
 			// this.getPeople();
 			this.getTemplates();
 			
+			this.updatePeople();	// sets now and sets person ages for the first time - needed by reSchedule
+			
 			this.setupRelTimes();
 			
 			this.reSchedule();
@@ -986,10 +998,21 @@ Edit/replace function not there
 			this.setupLinks();
 		},
 		
-		doTicking: function(){
+		updatePeople: function(){
 			var that = this;
 			that.now = new Date().getTime() / 1000;
 			
+			// update each person
+			this.dset.forEach(function(person){
+				person.setAge(that.now);
+			});
+		},
+		
+		doTicking: function(){
+			this.updatePeople();	// also sets this.now
+			
+			var that = this;			
+			// update each page
 			this.pages.forEach(function(page){
 				page.tick(that.now);
 			});
