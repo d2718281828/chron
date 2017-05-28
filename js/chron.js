@@ -2,7 +2,6 @@
 STATUS
 routing in and most bugs ironed out.
 TODO
-Edit/replace function not there
 */
 (function($){
 	/**
@@ -125,23 +124,25 @@ Edit/replace function not there
 	// Classes ================================================================================
 	// person Class
 	function person(name,birthutc){
+		this.update(name,birthutc);
+	}
+	person.prototype.update = function(name,birthutc){
 		//TODO also translate non-alphameric - this needs to be a valid class name and url.
 		this.id = name.toLowerCase();
+		this.id = this.id.replace(/[^A-Za-z0-9]/, "_");
 		this.name = name;
 		this.birthutc = birthutc;
 		this.birth = moment(birthutc);
 		this.birthsec = this.birth.unix();
+		console.log("IDS ",this.name, this.id);
 	}
 	person.prototype.setChronicle = function(c){
 		this.chronicle = c;
 		this.chronsize = c.chronsize;
 		// this.setupSchedule();
 	}
-	person.prototype.setAgeElement_obs = function(id){
-		this.f_age = $("#"+id);
-	}
-	person.prototype.setNextElement_obs = function(id){
-		this.f_next = $("#"+id);
+	person.prototype.url = function(){
+		return "#/person/"+this.id;
 	}
 	person.prototype.setAge = function(nowtime){
 		var age = nowtime-this.birthsec;
@@ -222,6 +223,9 @@ Edit/replace function not there
 		// For most types this is a null operation, it's only for the person ages
 		showAgeElement: function(person){
 			
+		},
+		personDependent: function(){
+			return false;
 		}
 	}
 	RelativeTime = $.extend({},BaseOccasion,{
@@ -247,7 +251,7 @@ Edit/replace function not there
 		},
 		setBase: function(pers){
 			this.base = pers;
-			this.code = "rt-"+pers.name;
+			this.code = "rt-"+pers.id;
 			this.occLabels = "times the age of "+pers.name;
 		},
 		relevantTo: function(person){
@@ -287,7 +291,10 @@ Edit/replace function not there
 			});
 			return sched;
 		},
-		baseMag: 3
+		baseMag: 3,
+		personDependent: function(){
+			return true;
+		}
 	});
 	SecondsTime = $.extend({},BaseOccasion,{
 		code:"sc",
@@ -347,6 +354,16 @@ Edit/replace function not there
 		labelsize: 1,
 		descid: "venusdesc",
 		baseMag: 0
+	});
+	EarthYears = $.extend({},BasePlanet,{
+		code:"er",
+		occLabel: "Earth year",
+		occLabels: "Earth years",
+		decPlaces: 7,
+		duration: 365.25636 * 86400,	// https://en.wikipedia.org/wiki/Sidereal_year
+		labelsize: 1,
+		descid: "earthdesc",
+		baseMag: 1
 	});
 	MarsYears = $.extend({},BasePlanet,{
 		code:"ma",
@@ -409,7 +426,7 @@ Edit/replace function not there
 	}
 	// used on the occasion page
 	occasion.prototype.title = function(){
-		return this.who.name+" "+this.label() +" "+this.magnitude;
+		return "<a href='"+this.who.url()+"'>"+this.who.name+"</a> "+this.label();// +" "+this.magnitude;
 	}
 	occasion.prototype.timeformat = function(){
 		//console.log("timeformat request",this.type);
@@ -581,7 +598,6 @@ Edit/replace function not there
 		this.person.schedule.forEach(function(occ){
 			sched.append('<p>'+occ.html()+'</p>');
 		});
-		// this.tick();
 	}
 	personPage.prototype.render = function(){
 		this.makePage();
@@ -592,10 +608,7 @@ Edit/replace function not there
 	personPage.prototype.tick = function(nowtime){
 		if (!this.person) return;
 		var that = this;
-		//this.f_age.html(this.person.age_sec_f);
-		//this.f_days.html(formatNum(this.person.age_days));
 		var ageInSec = this.person.age_sec;
-		//console.log("retrieved age of "+this.person.name+" = "+ageInSec+", "+this.person.age_sec_f);
 		this.chronicle.eventTypes.forEach(function(evtype){
 			evtype.showAgeElement(that.person);
 			that.domPage.find("."+evtype.code+"_f_age").html(evtype.ageFormatted(ageInSec));
@@ -603,18 +616,13 @@ Edit/replace function not there
 	}
 	personPage.prototype.makePage = function(){
 		var that=this;
-		//this.domPage.attr("id",this.pageid);
-		//$("body").append(this.domPage);
-		//this.domPage.hide();
 		
 		this.domPage.find(".pagetitle").html(this.pageid);
-		//this.f_age = this.domPage.find(".ageseconds");
-		//this.f_days = this.domPage.find(".agedays");
 		
 		var ages = this.domPage.find(".ageslist");
 		ages.empty();
 		this.chronicle.eventTypes.forEach(function(evtype){
-			/*if (evtype.relevantTo(that.person))*/ ages.append('<p>'+evtype.ageHtml()+'</p>');
+			ages.append('<p>'+evtype.ageHtml()+'</p>');
 		});
 	}
 	personPage.prototype.destroy = function(){
@@ -668,16 +676,21 @@ Edit/replace function not there
 			}
 			return null;
 		},
+		update: function(person){
+			this.makeIndex();	// in case the key changed
+			this.save();
+		},
 		add: function(person){
 			person.setChronicle(this.chronicle);
 			var key = person.id;
 			if (this.get(key)){
 				console.log("Rejecting duplicate insert of "+key);
-				return;
+				return "This person already exists, you cant add them again";
 			}
 			this.all.push(person);
 			this.index[key] = person;
 			this.save();
+			return "";
 		},
 		delete: function(personId){
 			if (!this.get(personId)) {
@@ -695,6 +708,13 @@ Edit/replace function not there
 			console.log("--Removing entry "+found, this.all);
 			if (found>=0) this.all.splice(found,1);
 			this.save();
+		},
+		makeIndex: function(){
+			var newIx = {};
+			this.forEach(function(person){
+				newIx[person.id] = person;
+			});
+			this.index = newIx;
 		},
 		forEach: function(cb){
 			for (var k=0; k<this.all.length; k++){
@@ -730,6 +750,7 @@ Edit/replace function not there
 			});
 			
 		},
+		// this is binding to a person if there is one
 		show: function(ev){
 			var $targ = $(ev.target);
 			this.personName = $targ.data("name");
@@ -743,9 +764,13 @@ Edit/replace function not there
 				$form.find("#person_date").val(dt[0]);
 				$form.find("#person_time").val(dt[1]);
 				this.personObject = pers;
+				$(".formtitle").html("Edit "+pers.name);
+				$("#save").html("Update");
 				$("#delete").show();
 			} else {
 				this.personObject = null;
+				$(".formtitle").html("Add New");
+				$("#save").html("Save");
 				$("#delete").hide();
 			}
 			this.isOpen = true;
@@ -762,28 +787,35 @@ Edit/replace function not there
 			var btime = $form.find("#person_time").val();
 			var isme = $form.find("#person_isme").is(':checked');
 			var bdatetime = bdate + "T" + ((typeof btime == "undefined" || btime=="") ? "12:00:00" : btime);
-			console.log("new item",bdatetime,btime);
 			
-			var newpeep = new person(name,bdatetime);
-			newpeep.setChronicle(this.ctl);
+			var msg;
+			if (this.personObject){
+				msg = this.ctl.updatePerson(this.personObject,name,bdatetime);
+			} else {
+				console.log("new item",bdatetime,btime);
 			
-			this.ctl.addPerson(newpeep);
+				var newpeep = new person(name,bdatetime);
+				newpeep.setChronicle(this.ctl);
 			
-			// clear and hide
-			this.cancel();			
+				msg = this.ctl.addPerson(newpeep);
+			}
+			if (msg) $(".message").html(msg);
+			else this.cancel();		// clear and hide
 		},
 		cancel: function(){
 			var $form = this.template;
 			var name = $form.find("#person_name").val("");
 			var bdate = $form.find("#person_date").val("");
 			var btime = $form.find("#person_time").val("");
+			$form.find(".message").html("");
 			this.isOpen = false;
 			$form.hide();
 		},
 		delete: function(){
 			console.log("deleting person "+this.personName);
-			this.ctl.deletePerson(this.personName);
-			this.cancel();
+			var msg = this.ctl.deletePerson(this.personName);
+			if (msg) $(".message").html(msg);
+			else this.cancel();		// clear and hide
 		}
 		
 	}
@@ -816,7 +848,7 @@ Edit/replace function not there
 			// this.getPeople();
 			this.getTemplates();
 			
-			this.updatePeople();	// sets now and sets person ages for the first time - needed by reSchedule
+			this.updatePeople();	// sets this.now and sets person ages for the first time - needed by reSchedule
 			
 			this.setupRelTimes();
 			
@@ -834,18 +866,24 @@ Edit/replace function not there
 			
 		},
 		eventTypes: [
-			SecondsTime,DaysTime,MercuryYears,VenusYears,MarsYears,JupiterYears,SaturnYears
+			SecondsTime,DaysTime,MercuryYears,VenusYears,EarthYears,MarsYears,JupiterYears,SaturnYears
 		],
 		/**
 		* add the Event types for relative ages
+		* Must be redo-able, so delete existing ones first
 		*/
 		setupRelTimes: function(){
 			var that = this;
+			var newEvents = [];
+			this.eventTypes.forEach(function(et){
+				if (!et.personDependent()) newEvents.push(et);
+			});
 			this.dset.forEach(function(person){
 				var rel = $.extend({},RelativeTime);
 				rel.setBase(person);
-				that.eventTypes.push(rel);
+				newEvents.push(rel);
 			});
+			this.eventTypes = newEvents;
 		},
 		reSchedule: function(){
 			this.dset.forEach(function(person){
@@ -947,17 +985,34 @@ Edit/replace function not there
 			return null;
 		},
 		addPerson: function(newpeep){
-			this.dset.add(newpeep);
-			this.updateEventTypes();
-			this.pages.push(new personPage(newpeep,this));
-			//this.tabify();
-			this.reRender();
+			var msg = this.dset.add(newpeep);
+			if (msg) return msg;
+			newpeep.setAge(this.now);
+			this.changePeople();
+			return "";
+		},
+		updatePerson: function(person,name,bdatetime){
+			person.update(name,bdatetime);
+			this.dset.update(person);
+			person.setAge(this.now);	// must reset the age before making a schedule.
+			this.changePeople();
+			return "";
 		},
 		deletePerson: function(peepname){
 			this.dset.delete(peepname);
 			this.updateEventTypes();
 			this.removePageFor(peepname);
 			//this.tabify();
+			//this.reRender();
+			this.changePeople();
+			return "";
+		},
+		/**
+		* If the list of people changes, then regenerate the person specific event types, and regenerate schedules and ages
+		*/
+		changePeople: function(){
+			this.setupRelTimes();
+			this.reSchedule();
 			this.reRender();
 		},
 		setupLinks: function(){
