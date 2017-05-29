@@ -4,7 +4,6 @@
 */
 (function(){
 
-  //Router.add('/page/registration-successfull', '<div><h3>Registration was successfull</h3></div>');
   Router.add("/person/{personid}", 'personpage', function(data){
 	  console.log("Routes - person - "+data.personid);
 	  Chronicle.bindPerson(data.personid);
@@ -12,6 +11,10 @@
   Router.add("/event/{eventid}", 'occasion', function(data){
 	  console.log("Routes - occasion - "+data.eventid);
 	  Chronicle.bindOccasion(data.eventid);
+  });
+  Router.add("/event2/{eventid}", 'occasion2', function(data){
+	  console.log("Routes - occasion 2 - "+data.eventid);
+	  //Chronicle.bindOccasion(data.eventid);
   });
   Router.add("/{pagename}", '', function(data){
 	  console.log("Routes - pagename");

@@ -9,6 +9,8 @@
 <script LANGUAGE="javascript" src="js/router.js"></script>
 <script LANGUAGE="javascript" src="js/chron.js"></script>
 <script LANGUAGE="javascript" src="js/routes.js"></script>
+<!--script src="js/svg.js"></script-->
+<!--script src="js/hextiles.js"></script-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 <link rel="stylesheet" type="text/css" href="css/style.css" >
@@ -66,6 +68,14 @@ Click on "Ages" above and then click on Add to add your date and time of birth. 
 <div id="schedule" role="page" class="wholepage">
 <h1>The Schedule</h1>
 <div class="alloccasions">
+</div>
+</div>
+
+<div id="occasion2" role="page" class="wholepage">
+<h1 class="occasiontitle">Occasion</h1>
+<div class="occasionmain">
+<div class="occasionwhen">
+</div>
 </div>
 </div>
 

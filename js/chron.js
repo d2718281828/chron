@@ -599,7 +599,9 @@ TODO
 			evtype.showAgeElement(that.person);
 		});
 		this.person.schedule.forEach(function(occ){
-			sched.append('<p>'+occ.html()+'</p>');
+			var mag = " class='mag"+occ.magnitude+"'";
+			var html = '<p'+mag+'>'+occ.html()+'</p>';
+			sched.append(html);
 		});
 	}
 	personPage.prototype.render = function(){

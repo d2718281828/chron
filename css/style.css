@@ -77,24 +77,24 @@ body.dark .personeditform {
 	background-color: #333;
 	border-color: #99c;
 }
-body.dark .mag0{
-	font-size: 70%;
-	color: #885500;
+body.dark .mag0, body.dark .mag0 a{
+	font-size: 80%;
+	color: #df9f00;
 }
-body.dark .mag1{
+body.dark .mag1, body.dark .mag1 a{
 	font-size: 90%;
-	color: #997700;
+	color: #e7b700;
 }
-body.dark .mag2{
-	font-size: 110%;
-	color: #bb9900;
+body.dark .mag2, body.dark .mag2 a{
+	font-size: 100%;
+	color: #efcf00;
 }
-body.dark .mag3{
-	font-size: 130%;
-	color: #ddcc00;
+body.dark .mag3, body.dark .mag3 a{
+	font-size: 115%;
+	color: #f7e700;
 }
-body.dark .mag4{
-	font-size: 160%;
+body.dark .mag4, body.dark .mag4 a{
+	font-size: 125%;
 	color: #ffff00;
 }
 .personeditform .message{
