@@ -6,11 +6,22 @@
 
     init: function(optionset){
       this.options = optionset;
+      var scale = this.options.cellsize;
+
       this.svgdoc = SVG(optionset.selector).size('100%','100%');
       this.defs = this.svgdoc.defs();
-      this.makeTiles();
+	  
+	  var w = $("#"+optionset.selector).width();
+	  var h = $("#"+optionset.selector).height(w);
 
-      this.doTile(14,10);
+      this.makeTiles();
+	  
+	  this.bits = {};
+      this.doTile(w/scale,w/scale);
+	  
+	  this.count = 0;
+	  
+	  //var svgbit = this.svgdoc.getElementById("svgimage-u-4-4");
     },
     doTile: function(w,h){
       var x,y;
@@ -21,9 +32,11 @@
           y = v*scale*alpha;
           r0 = Math.floor(3*Math.random());
           r1 = Math.floor(3*Math.random());
-          console.log("random",r0,r1);
-          this.svgdoc.use(this.tiles0[r0]).move(x,y);
-          this.svgdoc.use(this.tiles1[r1]).move(x,y);
+		  r0=1;
+		  r1=1;
+          //console.log("random",r0,r1);
+          this.bits["u-"+u+"-"+v] = this.svgdoc.use(this.tiles0[r0]).move(x,y).attr("id","svgimage-u-"+u+"-"+v);
+          this.svgdoc.use(this.tiles1[r1]).move(x,y).attr("id","svgimage-d-"+u+"-"+v);
         }
 
       }
@@ -71,7 +84,14 @@
       path = path+"L"+rc[0]+" "+rc[1];  // line to c
       group.path(path).stroke({ color: col1, opacity: 0.6, width: 5 }).fill("transparent");
 
-    }
+    },
+	move: function(){
+	  this.count++;
+	  if (this.count>20){
+		  this.bits["u-4-4"].remove();
+		  this.count = 0;
+	  }
+	}
   };
   /*
   $(document).ready(function(){

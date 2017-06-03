@@ -488,6 +488,28 @@ TODO
 	agespage.prototype.destroy = function(){
 		
 	}
+	function displayPage(id,chronicle){
+		this.pageid = id;
+		this.chronicle = chronicle;
+		this.occasion = null;
+	}
+	displayPage.prototype.bind = function(occasion){
+		this.occasion = occasion;
+		this.occasionid = occasion.id();
+		this.render();
+	}
+	displayPage.prototype.render = function(){
+		if (!this.occasion) return;
+		$(".occasiontitle").html(this.occasion.title());
+		$(".occasionwhen").html(this.occasion.when());
+		hextiles.init({
+			selector: "tableau",
+			cellsize: 50
+		});
+	}
+	displayPage.prototype.tick = function(nowtime){
+		console.log("displayPage::tick");
+	}
 	// occasion page
 	function occasionPage(id,chronicle){
 		this.pageid = id;
@@ -951,17 +973,16 @@ TODO
 			this.pages.push(about);
 
 			this.tabify();
-			/*
-			this.dset.forEach(function(person){
-				console.log("person page",person);
-				that.pages.push(new personPage(person,that));
-			});
-			*/
+			
 			// pages after this point will not be in the navigation
 			this.personPage = new personPage(that,$("#personpage"));
 			this.pages.push(this.personPage);
+			
 			this.occasionPage = new occasionPage("occasion",that);
 			this.pages.push(this.occasionPage);
+			
+			this.displayPage = new displayPage("occasion2",that);
+			this.pages.push(this.displayPage);
 			
 		},
 		reRender: function(){
@@ -977,6 +998,11 @@ TODO
 			var occasion = this.dset.getOccasion(eventid);
 			if (!occasion) console.log("WARNING - could not find event "+eventid);
 			this.occasionPage.bind(occasion);
+		},
+		bindOccasion2: function(eventid){
+			var occasion = this.dset.getOccasion(eventid);
+			if (!occasion) console.log("WARNING - could not find event "+eventid);
+			this.displayPage.bind(occasion);
 		},
 		getPerson: function(peepname){
 			return this.dset.get(peepname);

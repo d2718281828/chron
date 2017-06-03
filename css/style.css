@@ -100,3 +100,7 @@ body.dark .mag4, body.dark .mag4 a{
 .personeditform .message{
 	color: red;
 }
+.tableau {
+	width:100%;
+	height: 100vw;
+}

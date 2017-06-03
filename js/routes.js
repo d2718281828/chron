@@ -14,7 +14,7 @@
   });
   Router.add("/event2/{eventid}", 'occasion2', function(data){
 	  console.log("Routes - occasion 2 - "+data.eventid);
-	  //Chronicle.bindOccasion(data.eventid);
+	  Chronicle.bindOccasion2(data.eventid);
   });
   Router.add("/{pagename}", '', function(data){
 	  console.log("Routes - pagename");

@@ -72,10 +72,12 @@ Click on "Ages" above and then click on Add to add your date and time of birth. 
 </div>
 
 <div id="occasion2" role="page" class="wholepage">
-<h1 class="occasiontitle">Occasion</h1>
+<h1 class="occasiontitle">Occasion 2ness</h1>
 <div class="occasionmain">
 <div class="occasionwhen">
 </div>
+</div>
+<div id="tableau">
 </div>
 </div>
 
