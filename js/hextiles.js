@@ -16,7 +16,10 @@
 
       this.makeTiles();
 	  
+	  // store the set of eelements for subsequent mods
 	  this.bits = {};
+	  
+	  // initial build
       this.doTile(w/scale,w/scale);
 	  
 	  this.count = 0;
@@ -85,10 +88,10 @@
       group.path(path).stroke({ color: col1, opacity: 0.6, width: 5 }).fill("transparent");
 
     },
-	move: function(){
+	remove: function(u,v){
 	  this.count++;
 	  if (this.count>20){
-		  this.bits["u-4-4"].remove();
+		  this.bits["u-"+u+"-"+v].remove();
 		  this.count = 0;
 	  }
 	}

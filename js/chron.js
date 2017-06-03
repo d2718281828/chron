@@ -492,6 +492,8 @@ TODO
 		this.pageid = id;
 		this.chronicle = chronicle;
 		this.occasion = null;
+		this.count = 0;
+		this.zzz = 2;
 	}
 	displayPage.prototype.bind = function(occasion){
 		this.occasion = occasion;
@@ -507,8 +509,16 @@ TODO
 			cellsize: 50
 		});
 	}
+	//!!! remove not working at the moment
+	// also try replace
 	displayPage.prototype.tick = function(nowtime){
-		console.log("displayPage::tick");
+		this.count++;
+		if (this.count>20){
+			console.log("displayPage::tick "+this.zzz);
+			hextiles.remove(this.zzz,this.zzz);
+			this.count = 0;
+			this.zzz++;
+		}
 	}
 	// occasion page
 	function occasionPage(id,chronicle){
