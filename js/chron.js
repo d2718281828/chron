@@ -509,15 +509,18 @@ TODO
 			cellsize: 50
 		});
 	}
-	//!!! remove not working at the moment
 	// also try replace
 	displayPage.prototype.tick = function(nowtime){
 		this.count++;
 		if (this.count>20){
-			console.log("displayPage::tick "+this.zzz);
-			hextiles.remove(this.zzz,this.zzz);
+			console.log("displayPage::tick ");
+			var u = 3+Math.floor(5*Math.random());
+			var v = 3+Math.floor(5*Math.random());
+			var down = Math.floor(2*Math.random());
+			var next = Math.floor(3*Math.random());
+
+			hextiles.replace(u,v,down,next);
 			this.count = 0;
-			this.zzz++;
 		}
 	}
 	// occasion page
