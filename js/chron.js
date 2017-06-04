@@ -521,10 +521,10 @@ TODO
 			var u = 3+Math.floor((limit[0]-6)*Math.random());
 			var v = 3+Math.floor((limit[1]-6)*Math.random());
 			var down = Math.floor(2*Math.random());
-			//var tile = Math.floor(hextiles.numTiles()*Math.random());
+			var tile = Math.floor(hextiles.numTiles()*Math.random());
 			var next = Math.floor(3*Math.random());
 
-			hextiles.replace(u,v,down,-1,next);
+			hextiles.replace(u,v,down,tile,next);
 			this.count = 0;
 		}
 	}
