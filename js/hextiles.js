@@ -14,10 +14,11 @@
     init: function(optionset){
       this.options = optionset;
       var scale = this.options.cellsize;
+	  
+      this.svgdoc = SVG(optionset.selector).size('100%','100%');
+
 	  this.tileMaker = optionset.tiles;
 	  this.tileMaker.setParent(this);
-
-      this.svgdoc = SVG(optionset.selector).size('100%','100%');
 	  
       this.defs = this.svgdoc.defs();
 	  // make the tiles
@@ -38,17 +39,23 @@
 	scale: function(){
 		return this.options.cellsize;
 	},
+	numTiles: function(){
+		return this.tiles.length;
+	},
     doTile: function(w,h){
+	  this.tilingSize = [w,h];
       var xy,prop;
+	  var rot = 0;
       for (var u = 0; u<w; u++){
         for (var v = 0; v<h; v++){
 			for (var up = 0; up<2; up++){
 				xy = this.coords(u,v,up);
 				orient = Math.floor(3*Math.random());
-				orient=0;
+				orient=rot%3;
 				prop = u+"-"+v+"-"+up;
 				var angle = (orient*120+60*up)%360;
-				this.bits[prop] = this.svgdoc.use(this.tiles[up]).rotate(angle,xy[0],xy[1]).move(xy[0],xy[1]); //.attr("id","svgimage-u-"+u+"-"+v);
+				this.bits[prop] = this.svgdoc.use(this.tiles[up]).rotate(angle,xy[0],xy[1]).move(xy[0],xy[1]);
+				rot++;
 			}
         }
       }
@@ -74,7 +81,7 @@
 	replace: function(u,v,up,tile,orient){
 		var prop = u+"-"+v+"-"+up;
 		//var newone = (down==1) ? this.tiles1[withwhat] : this.tiles0[withwhat];
-		console.log("replacing "+prop);
+		//console.log("replacing "+prop);
 		if (this.bits.hasOwnProperty(prop)) {
 			var xy = this.coords(u,v,up);
 			this.bits[prop].remove();

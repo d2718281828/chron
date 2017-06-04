@@ -515,14 +515,16 @@ TODO
 	displayPage.prototype.tick = function(nowtime){
 		if (!this.bound) return;
 		this.count++;
-		if (this.count>20){
-			console.log("displayPage::tick ");
-			var u = 3+Math.floor(5*Math.random());
-			var v = 3+Math.floor(5*Math.random());
+		if (this.count>5){
+			//console.log("displayPage::tick ");
+			var limit = hextiles.tilingSize;
+			var u = 3+Math.floor((limit[0]-6)*Math.random());
+			var v = 3+Math.floor((limit[1]-6)*Math.random());
 			var down = Math.floor(2*Math.random());
+			var tile = Math.floor(hextiles.numTiles()*Math.random());
 			var next = Math.floor(3*Math.random());
 
-			hextiles.replace(u,v,down,0,next);
+			hextiles.replace(u,v,down,tile,next);
 			this.count = 0;
 		}
 	}
