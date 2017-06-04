@@ -54,7 +54,7 @@
 				orient=rot%3;
 				prop = u+"-"+v+"-"+up;
 				var angle = (orient*120+60*up)%360;
-				this.bits[prop] = this.svgdoc.use(this.tiles[up]).rotate(angle,xy[0],xy[1]).move(xy[0],xy[1]);
+				this.bits[prop] = this.svgdoc.use(this.tileMaker.get(up)).rotate(angle,xy[0],xy[1]).move(xy[0],xy[1]);
 				rot++;
 			}
         }
@@ -86,7 +86,7 @@
 			var xy = this.coords(u,v,up);
 			this.bits[prop].remove();
 			var angle = (orient*120+60*up)%360;
-			this.bits[prop] = this.svgdoc.use(this.tiles[tile]).rotate(angle,xy[0],xy[1]).move(xy[0],xy[1]);
+			this.bits[prop] = this.svgdoc.use(this.tileMaker.get(tile)).rotate(angle,xy[0],xy[1]).move(xy[0],xy[1]);
 		}
 	}
   };

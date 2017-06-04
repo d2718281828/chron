@@ -6,6 +6,7 @@
 	  
 		parent: null,
 		svgdoc: null,
+		theTiles: [],
 	  
 		// the owning hextiles object
 		setParent: function(ht){
@@ -37,7 +38,34 @@
 			result.push(this.makeTile(svgdefs, col, this.path1(va,vb,vc,scale)));
 			result.push(this.makeBerry(svgdefs, col, this.path1(va,vb,vc,scale),this.redBerry));
 			result.push(this.makeBerry(svgdefs, col, this.path1(va,vb,vc,scale),this.greenBerry));
+			this.theTiles = result;
+			this.theDistribution = this.distribution();
 			return result;
+		},
+		// realative frequency of the different tiles
+		distribution: function(){
+			var relative = [10,10, 1,6];
+			var k;
+			var tot=0;
+			for  (k=0; k<relative.length; k++){
+				tot+=relative[k];
+			}
+			var ans = [];
+			var cum = 0;
+			for  (k=0; k<relative.length; k++){
+				cum += relative[k]/tot;
+				ans.push(cum);
+			}
+			return ans;
+		},
+		get: function(ix){
+			if (ix>=0 && ix<this.theTiles.length) return this.theTiles[ix];
+			// make a random one
+			var rr = Math.rand();
+			for  (var k=0; k<this.theDistribution.length; k++){
+				if (this.theDistribution[k]>rr) return this.theTiles[k];
+			}
+			return this.theTiles[0];
 		},
 		makeTile: function(svgdefs,colour,path){
 			var group = svgdefs.group();
