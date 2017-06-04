@@ -164,7 +164,7 @@ TODO
 		var sched = [];
 		this.chronicle.eventTypes.forEach(function(evtype){
 			console.log("---- creating schedule for "+that.name,evtype);
-			sched = sched.concat(evtype.makeSchedule(age,age+100000000,that));
+			sched = sched.concat(evtype.makeSchedule(age-100000,age+100000000,that));
 		});
 		this.schedule = sched.sort(function(a,b){
 			return (a.occtime<b.occtime) ? -1 : (a.occtime>b.occtime ? 1 : 0);
@@ -493,12 +493,13 @@ TODO
 		this.chronicle = chronicle;
 		this.occasion = null;
 		this.count = 0;
-		this.zzz = 2;
+		this.bound = false;
 	}
 	displayPage.prototype.bind = function(occasion){
 		this.occasion = occasion;
 		this.occasionid = occasion.id();
 		this.render();
+		this.bound = true;
 	}
 	displayPage.prototype.render = function(){
 		if (!this.occasion) return;
@@ -511,6 +512,7 @@ TODO
 	}
 	// also try replace
 	displayPage.prototype.tick = function(nowtime){
+		if (!this.bound) return;
 		this.count++;
 		if (this.count>20){
 			console.log("displayPage::tick ");

@@ -3,7 +3,12 @@
   alpha = Math.sqrt(3)/2;	// vertical height of unit equilateral triangle
 
   window.hextiles = {
+	  
+	bits: {},
 
+	/** initialise the hextiles - this will initiate a drawing 
+	*
+	*/
     init: function(optionset){
       this.options = optionset;
       var scale = this.options.cellsize;
@@ -45,7 +50,7 @@
         return [  x = (u+(v%2)/2)*scale , v*scale*alpha ];
 		
 	},
-	// q, r and s are the midpoints of the cell. Would be more flexible to re-write as the vertices
+	// q, r and s are the midpoints of the cell. Would be more flexible to re-write as the verticesh
     makeTiles: function(){
       var scale = this.options.cellsize;
       var q = [0,0];
