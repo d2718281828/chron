@@ -11,6 +11,7 @@
 <script LANGUAGE="javascript" src="js/routes.js"></script>
 <script src="js/svg.js"></script>
 <script src="js/hextiles.js"></script>
+<script src="js/tileset.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 <link rel="stylesheet" type="text/css" href="css/style.css" >

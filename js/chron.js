@@ -507,7 +507,8 @@ TODO
 		$(".occasionwhen").html(this.occasion.when());
 		hextiles.init({
 			selector: "tableau",
-			cellsize: 50
+			cellsize: 100,
+			tiles: tileset
 		});
 	}
 	// also try replace
