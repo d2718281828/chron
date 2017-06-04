@@ -48,7 +48,7 @@
 				orient=0;
 				prop = u+"-"+v+"-"+up;
 				var angle = (orient*120+60*up)%360;
-				this.bits[prop] = this.svgdoc.use(this.tiles[0]).rotate(angle,xy[0],xy[1]).move(xy[0],xy[1]); //.attr("id","svgimage-u-"+u+"-"+v);
+				this.bits[prop] = this.svgdoc.use(this.tiles[up]).rotate(angle,xy[0],xy[1]).move(xy[0],xy[1]); //.attr("id","svgimage-u-"+u+"-"+v);
 			}
         }
       }

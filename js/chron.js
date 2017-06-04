@@ -522,7 +522,7 @@ TODO
 			var down = Math.floor(2*Math.random());
 			var next = Math.floor(3*Math.random());
 
-			hextiles.replace(u,v,down,next);
+			hextiles.replace(u,v,down,0,next);
 			this.count = 0;
 		}
 	}
