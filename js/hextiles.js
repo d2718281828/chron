@@ -25,13 +25,20 @@
 	  this.tiles = this.tileMaker.make(this.defs);
 	  
 	  var w = $("#"+optionset.selector).width();
-	  var h = $("#"+optionset.selector).height(w);
+	  var h = $("#"+optionset.selector).height();
+	  var revh = 1500000/(w*alpha);
+	  if (h<revh){
+		  h = revh;
+		  $("#"+optionset.selector).height(h);
+	  }
 
 	  // store the set of elements for subsequent mods
 	  this.bits = {};
 	  
 	  // initial build
-      this.doTile(w/scale,w/scale);
+	  var wnum = w/scale;
+	  var hnum = Math.ceil(140/(wnum*alpha));
+      this.doTile(wnum,hnum);
 	  
 	  this.initialised = true;
 	  

@@ -629,7 +629,8 @@ TODO
 		return formatLink(this.pageid,this.label);
 	}
 	artPage.prototype.bind = function(artId){
-		this.tileset = tileset;	// the only onee so far
+		if (artId=="berries") this.tileset = berries;
+		else this.tileset = stdset;
 		this.render();
 	}
 	artPage.prototype.render = function(){
