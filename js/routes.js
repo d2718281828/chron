@@ -12,6 +12,10 @@
 	  console.log("Routes - occasion - "+data.eventid);
 	  Chronicle.bindOccasion(data.eventid);
   });
+  Router.add("/art/{artid}", 'art', function(data){
+	  console.log("Art page for - "+data.artid);
+	  Chronicle.artPage.bind(data.artid);
+  });
   Router.add("/event2/{eventid}", 'occasion2', function(data){
 	  console.log("Routes - occasion 2 - "+data.eventid);
 	  Chronicle.bindOccasion2(data.eventid);

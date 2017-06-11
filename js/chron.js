@@ -618,6 +618,45 @@ TODO
 	}
 	staticPage.prototype.tick = function(nowtime){
 	}
+	//  art page
+	function artPage(id,chronicle,label){
+		this.pageid = id;
+		this.chronicle = chronicle;
+		this.label = label;
+		this.count = 0;
+	}
+	artPage.prototype.linktext = function(){
+		return formatLink(this.pageid,this.label);
+	}
+	artPage.prototype.bind = function(artId){
+		this.tileset = tileset;	// the only onee so far
+		this.render();
+	}
+	artPage.prototype.render = function(){
+		if (!this.tileset) return;
+		console.log("artpage render ",this.tileset);
+		hextiles.init({
+			selector: "art-canvas",
+			cellsize: 100,
+			tiles: this.tileset
+		});
+	}
+	artPage.prototype.tick = function(nowtime){
+		if (!this.tileset) return;
+		this.count++;
+		if (this.count>5){
+			var limit = hextiles.tilingSize;
+			var u = 3+Math.floor((limit[0]-6)*Math.random());
+			var v = 3+Math.floor((limit[1]-6)*Math.random());
+			var down = Math.floor(2*Math.random());
+			var tile = Math.floor(hextiles.numTiles()*Math.random());
+			var next = Math.floor(3*Math.random());
+			tile = -1;	// choose random tile
+
+			hextiles.replace(u,v,down,tile,next);
+			this.count = 0;
+		}
+	}
 	//  personpage
 	function personPage(chronicle,$pageinDom){
 		this.chronicle = chronicle;
@@ -1001,6 +1040,9 @@ TODO
 			
 			this.displayPage = new displayPage("occasion2",that);
 			this.pages.push(this.displayPage);
+			
+			this.artPage = new artPage("art",this,"Art");
+			this.pages.push(this.artPage);
 			
 		},
 		reRender: function(){

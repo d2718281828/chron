@@ -131,6 +131,11 @@ are probably more likely to have made a note of the accurate time of their birth
 <div class="personschedule"></div>
 </div>
 
+<div id="art" role="page" class="wholepage">
+<div id="art-canvas">
+</div>
+</div>
+
 <div id="saturndesc" class="templatedet">
 <p>Saturnian birthdays don’t come round that often, which makes this one is pretty special.</p>
 <p>How should you celebrate? Saturn was a Roman god with quite a few responsibilities, including wealth, plenty, 

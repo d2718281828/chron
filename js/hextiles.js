@@ -63,7 +63,7 @@
 	/**
 	* Convert the parallogrammed co-ords u,v to x,y.
 	* An extra co-ord is needed  because each parallelogram contains two triangles. The first is downward, and is up=0.
-	* The second us upward pointing and is up=1.
+	* 	The second us upward pointing and is up=1.
 	* The calculated co-ords are the centre of the triangle, to allow for rotations
 	* @return array with two elements, x, y.
 	* y is measured downwards.
@@ -86,6 +86,7 @@
 			var xy = this.coords(u,v,up);
 			this.bits[prop].remove();
 			var angle = (orient*120+60*up)%360;
+			// I dont understand why the rotate needs to be about xy, before the move, but that was how to make it work.
 			this.bits[prop] = this.svgdoc.use(this.tileMaker.get(tile)).rotate(angle,xy[0],xy[1]).move(xy[0],xy[1]);
 		}
 	}
