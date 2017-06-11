@@ -40,12 +40,11 @@
 			result.push(this.makeBerry(svgdefs, col, this.path1(va,vb,vc,scale),this.redBerry));
 			result.push(this.makeBerry(svgdefs, col, this.path1(va,vb,vc,scale),this.greenBerry));
 			this.theTiles = result;
-			this.theDistribution = this.distribution();
+			this.theDistribution = this.distribution([10,7,10, 1,6]);
 			return result;
 		},
 		// relative frequency of the different tiles
-		distribution: function(){
-			var relative = [10,7,10, 1,6];
+		distribution: function(relative){
 			var k;
 			var tot=0;
 			for  (k=0; k<relative.length; k++){
@@ -63,7 +62,7 @@
 			if (ix>=0 && ix<this.theTiles.length) return this.theTiles[ix];
 			// make a random one
 			var rr = Math.random();
-			console.log("getting random tile "+rr,this.theDistribution);
+			//console.log("getting random tile "+rr,this.theDistribution);
 			for  (var k=0; k<this.theDistribution.length; k++){
 				if (this.theDistribution[k]>rr) return this.theTiles[k];
 			}
