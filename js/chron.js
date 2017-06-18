@@ -629,8 +629,16 @@ TODO
 		return formatLink(this.pageid,this.label);
 	}
 	artPage.prototype.bind = function(artId){
-		if (artId=="berries") this.tileset = berries;
-		else this.tileset = stdset;
+		switch(artId){
+			case 'berries':
+			this.tileset = berries;
+			break;
+			case 'roads':
+			this.tileset = roads;
+			break;
+			default:
+			this.tileset = stdset;
+		}
 		this.render();
 	}
 	artPage.prototype.render = function(){

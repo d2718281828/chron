@@ -4,7 +4,7 @@
 
 	window.berries = $.extend({}, stdset,{
 	  
-		id; "berries",
+		id: "berries",
 		
 		// anything that needs to be done initially
 		init: function(){

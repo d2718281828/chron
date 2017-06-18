@@ -38,6 +38,10 @@
 	  // initial build
 	  var wnum = w/scale;
 	  var hnum = Math.ceil(140/(wnum*alpha));
+	  if (false){	// set to true when debugging tiles
+		  wnum = 1;
+		  hnum = 1;
+	  }
       this.doTile(wnum,hnum);
 	  
 	  this.initialised = true;

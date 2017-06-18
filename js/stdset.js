@@ -8,6 +8,10 @@
 		svgdoc: null,
 		theTiles: [],
 		id: "stdset",
+		// try to use std names for the colours for portability between tiles: fore1/2 back1/2
+		colours: {"fore1": 	'#fb6',
+				"fore2":	'#6fb',
+		},
 	  
 		// the owning hextiles object
 		setParent: function(ht){
@@ -25,11 +29,11 @@
 			var va = [-scale/2, -scale*alpha/3];
 			var vb = [scale/2, -scale*alpha/3];
 			var vc = [0, 2*scale*alpha/3];
-			var col = '#fb6';
-			result.push(this.makeTile(svgdefs, col, this.path1(va,vb,vc,scale)));
-			var col = '#6fb';
-			result.push(this.makeTile(svgdefs, col, this.path1(va,vb,vc,scale)));
-			result.push(this.makeTile(svgdefs, col, this.path2(va,vb,vc,scale)));
+			
+			result.push(this.makeTile(svgdefs, this.colours.fore1, this.path1(va,vb,vc,scale)));
+			result.push(this.makeTile(svgdefs, this.colours.fore2, this.path1(va,vb,vc,scale)));
+			result.push(this.makeTile(svgdefs, this.colours.fore1, this.path2(va,vb,vc,scale)));
+			
 			this.theTiles = result;
 			this.theDistribution = this.distribution([10,7,4]);
 			return result;
@@ -106,6 +110,21 @@
 			path = path+"M"+rcb[0]+" "+rcb[1];
 			path = path+"A"+rad+" "+rad+" 0 0 1 "+rbc[0]+" "+rbc[1];  // arc cb to bc
 			return path;
+		},
+		/** return the thirds points.
+		* @param va,b,c array pair of co-ords of point a,b,c
+		* @return object with 6 properties ab, ac, bc etc. Each is a 2 element array with x,y co-ords
+		* point ab is on the side between va and vb, closer to va. ba is on that side, closer to vb, etc.
+		*/
+		thirds: function(va,vb,vc){
+			var r = {};
+			r.ab = [(2*va[0]+vb[0])/3, (2*va[1]+vb[1])/3 ];
+			r.ac = [(2*va[0]+vc[0])/3, (2*va[1]+vc[1])/3 ];
+			r.ba = [(2*vb[0]+va[0])/3, (2*vb[1]+va[1])/3 ];
+			r.bc = [(2*vb[0]+vc[0])/3, (2*vb[1]+vc[1])/3 ];
+			r.ca = [(2*vc[0]+va[0])/3, (2*vc[1]+va[1])/3 ];
+			r.cb = [(2*vc[0]+vb[0])/3, (2*vc[1]+vb[1])/3 ];
+			return r;
 		},
 	};
 
