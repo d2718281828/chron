@@ -1,9 +1,16 @@
 (function($){
 
-	alpha = Math.sqrt(3)/2;	// vertical height of unit equilateral triangle
+	var alpha = Math.sqrt(3)/2;	// vertical height of unit equilateral triangle
 	// weights for the intersection of the 2/3 arcs
-	w_apex = Math.sqrt(7/27);	
-	w_base = (1-w_apex)/2;
+	var w_apex = Math.sqrt(7/27);	
+	var w_base = (1-w_apex)/2;
+	// point q which is 1/2 from a and 2/3 from c
+	// i did this on a piece of paper, draw right angle triangles to the desired point with hyps 1/2, 2/3, adj .5+x and .5-x
+	var x = -7/72;		// distance from middle of ac to the perp foot.
+	var y = Math.sqrt(1/12 - (29*29)/(72*72*3)); // y/root 3
+	var w_q_a = 0.5 - x -y;
+	var w_q_b = 2 * y;
+	var w_q_c = 0.5 + x -y;
 
 	window.roads = $.extend({}, stdset,{
 	  
@@ -38,6 +45,7 @@
 			var rr = this.thirds(vb,va,vc);	// rightwards
 			this.addIntersections(rl,scale,va,vb,vc);
 			this.addMidpoints(rl,scale,va,vb,vc);
+			this.addHalf2Thirds(rl,scale,va,vb,vc);
 
 			group.path(this.tarmac(rl,scale,!inwards)).fill(this.colours.back1);
 			group.path(this.tarmac(rr,scale,inwards)).fill(this.colours.back1);
@@ -57,6 +65,15 @@
 			r.abm = [(va[0]+vb[0])/2, (va[1]+vb[1])/2];
 			r.bcm = [(vb[0]+vc[0])/2, (vb[1]+vc[1])/2];
 			r.cam = [(vc[0]+va[0])/2, (vc[1]+va[1])/2];
+		},
+		// add points half from one vertex and 2/3 from another ht_acb is half from a and 2/3 from c
+		addHalf2Thirds: function(r,scale,va,vb,vc){
+			r.ht_acb = [w_q_a*va[0]+w_q_c*vc[0]+w_q_b*vb[0], w_q_a*va[1]+w_q_c*vc[1]+w_q_b*vb[1]];
+			r.ht_cab = [w_q_a*vc[0]+w_q_c*va[0]+w_q_b*vb[0], w_q_a*vc[1]+w_q_c*va[1]+w_q_b*vb[1]];
+			r.ht_bca = [w_q_a*vb[0]+w_q_c*vc[0]+w_q_b*va[0], w_q_a*vb[1]+w_q_c*vc[1]+w_q_b*va[1]];
+			r.ht_cba = [w_q_a*vc[0]+w_q_c*vb[0]+w_q_b*va[0], w_q_a*vc[1]+w_q_c*vb[1]+w_q_b*va[1]];
+			r.ht_abc = [w_q_a*va[0]+w_q_c*vb[0]+w_q_b*vc[0], w_q_a*va[1]+w_q_c*vb[1]+w_q_b*vc[1]];
+			r.ht_bac = [w_q_a*vb[0]+w_q_c*va[0]+w_q_b*vc[0], w_q_a*vb[1]+w_q_c*va[1]+w_q_b*vc[1]];
 		},
 		// paint out the road surface, the arc about va
 		tarmac: function(r,scale,inwards){
@@ -97,6 +114,8 @@
 			var path = "";
 			path = path+"M"+r.abm[0]+" "+r.abm[1];						
 			path = path+"A"+rad+" "+rad+" 0 0 "+(!inwards?"0":"1")+" "+r.bcm[0]+" "+r.bcm[1];  // arc abm to bcm
+			path = path+"M"+r.cam[0]+" "+r.cam[1];						
+			path = path+"A"+rad+" "+rad+" 0 0 "+(!inwards?"0":"1")+" "+r.ht_acb[0]+" "+r.ht_acb[1];  // arc acm to ht_acb
 			return path;
 		},
 	});
