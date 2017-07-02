@@ -115,7 +115,7 @@
 			path = path+"M"+r.abm[0]+" "+r.abm[1];						
 			path = path+"A"+rad+" "+rad+" 0 0 "+(!inwards?"0":"1")+" "+r.bcm[0]+" "+r.bcm[1];  // arc abm to bcm
 			path = path+"M"+r.cam[0]+" "+r.cam[1];						
-			path = path+"A"+rad+" "+rad+" 0 0 "+(!inwards?"0":"1")+" "+r.ht_acb[0]+" "+r.ht_acb[1];  // arc acm to ht_acb
+			path = path+"A"+rad+" "+rad+" 0 0 "+(!inwards?"0":"1")+" "+r.ht_abc[0]+" "+r.ht_abc[1];  // arc acm to ht_abc
 			return path;
 		},
 	});
