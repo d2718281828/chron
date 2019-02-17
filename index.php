@@ -28,7 +28,8 @@ Enter your birthdate (and time, if you know it), and that of your friends, and w
 may not have thought of.</p>
 <div class="if-no-people">
 <h1>Getting Started</h1>
-Click on "Ages" above and then click on Add to add your date and time of birth. You can add as many people as you wish.
+<p>Click on "Ages" above and then click on Add to add your date and time of birth. You can add as many people as you wish.</p>
+<p>These people will be stored in your browser storage.</p>
 </div>
 <h1>The time now</h1>
 <p>Counting the seconds</p>
@@ -38,6 +39,9 @@ Click on "Ages" above and then click on Add to add your date and time of birth. 
 
 <div id="summary" role="page" class="wholepage">
 <h1>People</h1>
+<p class="demoonly">You can browse the site just looking at the demonstration people Jane and Jason, or you can click below to
+add yourself, friends and family.
+</p>
 <div id="addperson" class="button" data-name="">Add person</div>
 <div id="personedit" class="template personeditform">
 	<h2 class="formtitle">Add/Edit</h2>

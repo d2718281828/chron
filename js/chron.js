@@ -264,6 +264,8 @@ TODO
 			if (this.relevantTo(person)) $sect.show();
 			else $sect.hide();
 		},
+		// TODO this doesnt work at all well for really young quotient - far too many numbers to check.
+		// Need to protect against really big numbers
 		makeSchedule: function(agefrom,ageto,person){
 			var that = this;
 			var sched = [];
@@ -474,6 +476,7 @@ TODO
 			html+= '<p><div class="button editperson" data-name="'+person.id+'">Edit</div></p>';
 		});
 		$(".allages").html(html);
+		if (!this.chronicle.is_demo()) $(".demoonly").hide();
 		/*
 		this.chronicle.dset.forEach(function(person){
 			person.setAgeElement('age-'+person.id);
@@ -723,13 +726,26 @@ TODO
 	DataSet = {
 		
 		all: [],
+		demoMode: false,		// if true, show janet and john
 		index: {},
+		demoPeople: [
+			["person", "Jane", "1993-04-12T13:30:00"], 
+			["person", "Jason", "1999-11-06T07:45:00"], 
+		],
 		
 		init: function(chronicle){
 			this.chronicle = chronicle;
+			this.clearPeople();
 			this.load();
 		},
+		clearPeople: function(){
+			console.log("Clearing people from Dataset.all");
+			this.all = [];
+			this.index = {};
+		},
 		save: function(){
+			if (this.demoMode) return;
+			console.log("Saving people from Dataset.all");
 			var m = [];
 			this.all.forEach(function(person){
 				m.push(person.toArray());
@@ -739,12 +755,19 @@ TODO
 		load: function() {
 			var that = this;
 			if (typeof(Storage) !== "undefined") {
-				if (localStorage.hasOwnProperty("chrondata")) var storedArray = JSON.parse(localStorage.chrondata);
-				else var storedArray = [];
+				if (localStorage.hasOwnProperty("chrondata")) {
+					console.log("Loading people to Dataset.all from local storage "+localStorage.chrondata);
+					var storedArray = JSON.parse(localStorage.chrondata);
+					var is_demo = false;
+				} else {
+					console.log("Loading demo people to Dataset.all");
+					var storedArray = this.demoPeople;
+					var is_demo = true;
+				}
 			} else {
 				var storedArray=[];		// get from cookie??? Do i want to support such old browsers?
 			}
-						
+			
 			storedArray.forEach(function(val){
 				var newObj = null;
 				if (val[0]=="person") {
@@ -752,6 +775,7 @@ TODO
 					that.add(newObj);
 				}	
 			});
+			this.demoMode = is_demo;	// set demo mode after the initial adds
 		},
 		hasPeople: function(){
 			return this.all.length>0;
@@ -772,6 +796,11 @@ TODO
 			this.save();
 		},
 		add: function(person){
+			// if adding a person, drop out of demo mode
+			if (this.demoMode){
+				this.clearPeople();	// remove demo people
+				this.demoMode = false;
+			}
 			person.setChronicle(this.chronicle);
 			var key = person.id;
 			if (this.get(key)){
@@ -1053,6 +1082,9 @@ TODO
 			this.artPage = new artPage("art",this,"Art");
 			this.pages.push(this.artPage);
 			
+		},
+		is_demo: function(){
+			return this.dset.demoMode;
 		},
 		reRender: function(){
 			this.pages.forEach(function(page){page.render()});
